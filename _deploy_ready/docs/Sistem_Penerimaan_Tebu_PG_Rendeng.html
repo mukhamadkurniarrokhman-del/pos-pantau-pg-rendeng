@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Penerimaan Tebu — PG Rendeng Kudus</title>
+<style>
+  :root {
+    --green-primary: #1B7A3D;
+    --green-light: #E8F5E9;
+    --green-dark: #0D5C2A;
+    --blue-accent: #1565C0;
+    --blue-light: #E3F2FD;
+    --gray-50: #FAFAFA;
+    --gray-100: #F5F5F5;
+    --gray-200: #EEEEEE;
+    --gray-300: #E0E0E0;
+    --gray-500: #9E9E9E;
+    --gray-700: #616161;
+    --gray-900: #212121;
+    --red-accent: #D32F2F;
+    --orange-accent: #EF6C00;
+    --white: #FFFFFF;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.7;
+  }
+
+  /* ─── HEADER ─── */
+  .hero {
+    background: linear-gradient(135deg, var(--green-primary) 0%, var(--green-dark) 100%);
+    color: white;
+    padding: 60px 0 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 500px;
+    height: 500px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+  .hero h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; }
+  .hero .subtitle { font-size: 1rem; opacity: 0.85; margin-top: 8px; font-weight: 400; }
+  .hero .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-top: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── NAV TABS ─── */
+  .nav-wrap {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-tabs {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    overflow-x: auto;
+    gap: 0;
+  }
+  .nav-tabs button {
+    flex: 1;
+    min-width: 140px;
+    background: none;
+    border: none;
+    padding: 16px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-tabs button:hover { color: var(--green-primary); background: var(--green-light); }
+  .nav-tabs button.active {
+    color: var(--green-primary);
+    border-bottom-color: var(--green-primary);
+  }
+
+  /* ─── CONTENT ─── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 32px 0 12px;
+  }
+  h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--green-primary);
+    margin: 20px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  p { margin-bottom: 14px; color: var(--gray-700); }
+
+  .section-desc {
+    font-size: 0.95rem;
+    color: var(--gray-500);
+    margin-bottom: 32px;
+    border-left: 3px solid var(--green-primary);
+    padding-left: 16px;
+  }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-green { border-left: 4px solid var(--green-primary); }
+  .card-blue { border-left: 4px solid var(--blue-accent); }
+  .card-orange { border-left: 4px solid var(--orange-accent); }
+  .card-red { border-left: 4px solid var(--red-accent); }
+
+  /* ─── FLOW DIAGRAM ─── */
+  .flow-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .flow-step {
+    background: var(--white);
+    border: 2px solid var(--green-primary);
+    border-radius: 10px;
+    padding: 16px 20px;
+    min-width: 180px;
+    text-align: center;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+  }
+  .flow-step .step-num {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--green-primary);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flow-step .step-title { font-weight: 700; font-size: 0.85rem; color: var(--green-dark); margin-bottom: 4px; }
+  .flow-step .step-desc { font-size: 0.78rem; color: var(--gray-500); }
+  .flow-arrow {
+    font-size: 1.4rem;
+    color: var(--green-primary);
+    font-weight: 700;
+  }
+
+  /* ─── TABLES ─── */
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  th {
+    background: var(--green-primary);
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+  tr:nth-child(even) { background: var(--gray-50); }
+  tr:hover { background: var(--green-light); }
+
+  /* ─── CODE BLOCK ─── */
+  .code-block {
+    background: #1E1E1E;
+    color: #D4D4D4;
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+  .code-block .kw { color: #569CD6; }
+  .code-block .type { color: #4EC9B0; }
+  .code-block .str { color: #CE9178; }
+  .code-block .comment { color: #6A9955; }
+  .code-block .fn { color: #DCDCAA; }
+
+  /* ─── WIREFRAME PHONE ─── */
+  .phone-frame {
+    width: 320px;
+    min-height: 580px;
+    background: var(--white);
+    border: 3px solid var(--gray-300);
+    border-radius: 36px;
+    padding: 12px;
+    margin: 20px auto;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  .phone-notch {
+    width: 120px;
+    height: 24px;
+    background: var(--gray-300);
+    border-radius: 0 0 14px 14px;
+    margin: 0 auto 8px;
+  }
+  .phone-screen {
+    background: var(--gray-50);
+    border-radius: 24px;
+    min-height: 520px;
+    overflow: hidden;
+  }
+  .phone-statusbar {
+    background: var(--green-primary);
+    color: white;
+    padding: 10px 16px;
+    font-size: 0.7rem;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+  }
+  .phone-header {
+    background: var(--green-primary);
+    color: white;
+    padding: 12px 16px 16px;
+    text-align: center;
+  }
+  .phone-header h5 { font-size: 0.95rem; font-weight: 700; }
+  .phone-header small { font-size: 0.7rem; opacity: 0.8; }
+  .phone-body { padding: 16px; }
+
+  .input-mock {
+    background: var(--white);
+    border: 1.5px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .input-mock.filled { color: var(--gray-900); border-color: var(--green-primary); }
+  .input-mock .icon { font-size: 1rem; }
+
+  .btn-mock {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 12px;
+    cursor: default;
+  }
+  .btn-green { background: var(--green-primary); color: white; }
+  .btn-outline { background: transparent; border: 2px solid var(--green-primary); color: var(--green-primary); }
+
+  .camera-mock {
+    background: var(--gray-200);
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+    color: var(--gray-500);
+    font-size: 0.78rem;
+  }
+  .camera-mock .cam-icon { font-size: 1.8rem; }
+
+  /* ─── WIREFRAME GRID ─── */
+  .wireframe-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: center;
+    margin: 24px 0;
+  }
+
+  /* ─── TAG / PILL ─── */
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  .tag-green { background: var(--green-light); color: var(--green-primary); }
+  .tag-blue { background: var(--blue-light); color: var(--blue-accent); }
+  .tag-orange { background: #FFF3E0; color: var(--orange-accent); }
+  .tag-red { background: #FFEBEE; color: var(--red-accent); }
+
+  /* ─── LIST ITEM (for history wireframe) ─── */
+  .history-item {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .history-item .hi-left { font-size: 0.78rem; }
+  .history-item .hi-left strong { color: var(--gray-900); display: block; }
+  .history-item .hi-left small { color: var(--gray-500); }
+  .history-item .hi-right { text-align: right; font-size: 0.72rem; color: var(--gray-500); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 1.6rem; }
+    .flow-container { flex-direction: column; align-items: stretch; }
+    .flow-arrow { transform: rotate(90deg); text-align: center; }
+    .phone-frame { width: 100%; max-width: 320px; }
+  }
+
+  /* ─── ARCHITECTURE DIAGRAM ─── */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .arch-box {
+    background: var(--white);
+    border: 2px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .arch-box:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .arch-box .arch-icon { font-size: 2rem; margin-bottom: 8px; }
+  .arch-box .arch-title { font-weight: 700; font-size: 0.85rem; color: var(--gray-900); }
+  .arch-box .arch-desc { font-size: 0.75rem; color: var(--gray-500); margin-top: 4px; }
+  .arch-box.highlight { border-color: var(--green-primary); background: var(--green-light); }
+
+  .divider { height: 1px; background: var(--gray-200); margin: 32px 0; }
+
+  /* ─── ER DIAGRAM ─── */
+  .er-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+  }
+  .er-table {
+    border: 2px solid var(--green-primary);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .er-table-head {
+    background: var(--green-primary);
+    color: white;
+    padding: 10px 16px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .er-table-body { padding: 4px 0; }
+  .er-field {
+    padding: 6px 16px;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .er-field:last-child { border-bottom: none; }
+  .er-field .fname { font-weight: 600; color: var(--gray-900); }
+  .er-field .ftype { color: var(--gray-500); font-size: 0.75rem; font-family: monospace; }
+  .er-field .fpk { color: var(--orange-accent); font-weight: 700; font-size: 0.7rem; }
+  .er-field .ffk { color: var(--blue-accent); font-weight: 700; font-size: 0.7rem; }
+  .er-field-new { background: #FFFDE7; }
+
+  /* ─── UPDATE BADGE ─── */
+  .update-badge {
+    display: inline-block;
+    background: #FF6F00;
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── DASHBOARD WEB MOCKUP ─── */
+  .web-frame {
+    background: var(--white);
+    border: 2px solid var(--gray-300);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    margin: 20px 0;
+  }
+  .web-titlebar {
+    background: var(--gray-200);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    color: var(--gray-500);
+  }
+  .web-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .web-content {
+    padding: 24px;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-card .stat-num { font-size: 1.8rem; font-weight: 700; }
+  .stat-card .stat-label { font-size: 0.72rem; color: var(--gray-500); margin-top: 4px; }
+  .mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+  }
+  .mini-table th {
+    background: var(--green-primary);
+    color: white;
+    padding: 8px 12px;
+    font-size: 0.72rem;
+    text-align: left;
+  }
+  .mini-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gray-200);
+    font-size: 0.75rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<div class="hero">
+  <h1>Sistem Penerimaan Tebu Digital</h1>
+  <div class="subtitle">PG Rendeng — Kudus, Jawa Tengah</div>
+  <div class="badge">DOKUMEN DESAIN SISTEM v1.1 — April 2026</div>
+</div>
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<div class="nav-wrap">
+  <div class="nav-tabs">
+    <button class="active" onclick="showTab('arsitektur')">1. Arsitektur & Workflow</button>
+    <button onclick="showTab('keamanan')">2. Keamanan Data <span class="update-badge">BARU</span></button>
+    <button onclick="showTab('teknis')">3. Solusi Teknis</button>
+    <button onclick="showTab('database')">4. Database</button>
+    <button onclick="showTab('uiux')">5. UI/UX Wireframe</button>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  TAB 1 — ARSITEKTUR & WORKFLOW                 -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="arsitektur" class="tab-content active">
+  <h2>Arsitektur Sistem & Alur Kerja</h2>
+  <p class="section-desc">Gambaran menyeluruh arsitektur sistem dan alur perjalanan truk tebu dari pos pantau hingga notifikasi WhatsApp terkirim ke petani.</p>
+
+  <!-- Architecture Overview -->
+  <h3>Arsitektur Sistem (High-Level)</h3>
+  <div class="arch-grid">
+    <div class="arch-box highlight">
+      <div class="arch-icon">📱</div>
+      <div class="arch-title">Aplikasi Android</div>
+      <div class="arch-desc">Petugas pos pantau input data, foto truk, verifikasi lokasi GPS</div>
+    </div>
+    <div class="arch-box">
+      <div class="arch-icon">☁️</div>
+      <div class="arch-title">Backend API</div>
+      <div class="arch-desc">REST API — autentikasi, validasi pos-user binding, bisnis logic</div>
+    </div>
+    <div class="arch-box">
+      <div class="arch-icon">🗄️</div>
+      <div class="arch-title">Database</div>
+      <div class="arch-desc">PostgreSQL — data kontrak, petani, truk, transaksi pos</div>
+    </div>
+    <div class="arch-box">
+      <div class="arch-icon">🔍</div>
+      <div class="arch-title">OCR Service</div>
+      <div class="arch-desc">Google ML Kit (on-device) + server fallback untuk baca pelat nomor</div>
+    </div>
+    <div class="arch-box">
+      <div class="arch-icon">📍</div>
+      <div class="arch-title">Location Validator</div>
+      <div class="arch-desc">Multi-layer anti-fake GPS: sensor fusion, mock detection, geofence</div>
+    </div>
+    <div class="arch-box">
+      <div class="arch-icon">💬</div>
+      <div class="arch-title">WhatsApp Gateway</div>
+      <div class="arch-desc">Ringkasan harian jam 22:00 WIB — satu pesan per kontrak per hari</div>
+    </div>
+    <div class="arch-box" style="border-color: var(--orange-accent);">
+      <div class="arch-icon">⏰</div>
+      <div class="arch-title">Cron Scheduler <span class="update-badge">BARU</span></div>
+      <div class="arch-desc">Job scheduler untuk kirim ringkasan WA jam 22:00 & pembersihan data</div>
+    </div>
+    <div class="arch-box" style="border-color: var(--blue-accent);">
+      <div class="arch-icon">🖥️</div>
+      <div class="arch-title">Dashboard Web Pos <span class="update-badge">BARU</span></div>
+      <div class="arch-desc">Petugas lihat data truk masuk di posnya, ringkasan harian & filter</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- WORKFLOW -->
+  <h3>Alur Kerja (Workflow) — Truk Tebu Luar Kudus</h3>
+  <p>Berikut alur lengkap dari kedatangan truk hingga notifikasi terkirim:</p>
+
+  <div class="flow-container">
+    <div class="flow-step">
+      <div class="step-num">1</div>
+      <div class="step-title">Truk Tiba di Pos</div>
+      <div class="step-desc">Truk dari luar Kudus tiba di salah satu dari 6 pos pantau</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">2</div>
+      <div class="step-title">Verifikasi Lokasi</div>
+      <div class="step-desc">Sistem validasi GPS petugas + cek pos_id sesuai penugasan</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">3</div>
+      <div class="step-title">Input Kontrak</div>
+      <div class="step-desc">Petugas memasukkan nomor kontrak, nama petani auto-fill</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">4</div>
+      <div class="step-title">Foto & OCR</div>
+      <div class="step-desc">Foto truk + muatan, OCR otomatis baca pelat nomor</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">5</div>
+      <div class="step-title">Review & Submit</div>
+      <div class="step-desc">Petugas verifikasi data, lalu submit ke server</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color: var(--blue-accent);">
+      <div class="step-num" style="background: var(--blue-accent);">6</div>
+      <div class="step-title" style="color: var(--blue-accent);">Server Validation</div>
+      <div class="step-desc">Validasi pos_id = petugas.pos_id, timestamp server, simpan DB</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color: var(--orange-accent);">
+      <div class="step-num" style="background: var(--orange-accent);">7</div>
+      <div class="step-title" style="color: var(--orange-accent);">Ringkasan WA (22:00)</div>
+      <div class="step-desc">Cron job kumpulkan data hari ini, kirim 1 pesan per kontrak</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- DETAIL SETIAP LANGKAH -->
+  <h3>Detail Setiap Langkah</h3>
+
+  <div class="card card-green">
+    <h4>Langkah 1-2: Kedatangan & Verifikasi Lokasi + Pos Binding</h4>
+    <p>Saat petugas membuka aplikasi dan memulai pencatatan baru, sistem secara otomatis menjalankan validasi lokasi multi-layer. Sistem mengecek apakah petugas berada dalam radius 200 meter dari koordinat pos pantau yang sudah didaftarkan. <strong>Selain itu, sistem memverifikasi bahwa pos_id yang terdeteksi dari GPS cocok dengan pos_id yang ditugaskan ke petugas tersebut di database.</strong> Jika terdeteksi fake GPS, lokasi tidak valid, atau petugas berada di pos yang bukan penugasannya, petugas tidak bisa melanjutkan input data.</p>
+  </div>
+
+  <div class="card card-green">
+    <h4>Langkah 3: Input Nomor Kontrak</h4>
+    <p>Petugas mengetikkan nomor kontrak. Sistem melakukan lookup ke database dan secara otomatis menampilkan nama petani, alamat, dan nomor WhatsApp. Jika kontrak tidak ditemukan, petugas dapat memilih mode "Input Manual" untuk mengisi data secara langsung, tetapi data tersebut akan ditandai sebagai "Perlu Verifikasi" di sistem pusat.</p>
+  </div>
+
+  <div class="card card-green">
+    <h4>Langkah 4: Foto Truk & OCR Pelat Nomor</h4>
+    <p>Petugas mengambil foto truk menggunakan kamera dalam aplikasi. Sistem menjalankan OCR (Google ML Kit) secara on-device untuk membaca pelat nomor secara otomatis. Hasil OCR ditampilkan ke petugas untuk diverifikasi atau dikoreksi. Foto kedua untuk muatan tebu juga diambil sebagai dokumentasi visual. <strong>Metadata GPS dan timestamp dari foto ikut tersimpan dan divalidasi per entri truk.</strong></p>
+  </div>
+
+  <div class="card card-blue">
+    <h4>Langkah 5-6: Submit & Server Validation <span class="update-badge">DIPERBARUI</span></h4>
+    <p>Setelah petugas menekan tombol Submit, seluruh data dikirim ke backend API beserta metadata lokasi GPS, device timestamp, dan device ID. <strong>Server melakukan validasi keamanan berlapis:</strong></p>
+    <p>1) <strong>Validasi pos binding</strong> — cek bahwa petugas_id yang submit memiliki pos_id yang sama dengan pos_id dalam data transaksi. Jika tidak cocok, transaksi ditolak.<br>
+    2) <strong>Server timestamp</strong> — waktu pencatatan menggunakan <code>NOW()</code> dari server, bukan timestamp dari device, untuk mencegah manipulasi waktu.<br>
+    3) Cek duplikasi (apakah truk yang sama sudah pernah tercatat hari ini di pos yang sama).<br>
+    4) Cek konsistensi kontrak serta menyimpan foto ke cloud storage.<br>
+    5) <strong>Foto dan GPS metadata divalidasi dan disimpan per entri</strong> — setiap record memiliki bukti lokasi dan visual yang lengkap.</p>
+  </div>
+
+  <div class="card card-orange">
+    <h4>Langkah 7: Notifikasi WhatsApp — Ringkasan Harian Jam 22:00 WIB <span class="update-badge">DIPERBARUI</span></h4>
+    <p><strong>Notifikasi WhatsApp tidak lagi dikirim per truk secara real-time.</strong> Sebagai gantinya, sistem menggunakan cron job yang berjalan setiap hari jam 22:00 WIB untuk mengumpulkan seluruh data truk yang masuk hari itu, lalu mengirimkan <strong>satu pesan ringkasan per nomor kontrak</strong>. Ini mencegah spam jika satu kontrak mengirim banyak truk dalam satu hari. Pesan berisi total truk, daftar pelat nomor, dan pos-pos yang dilewati.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ALUR TEBU LOKAL -->
+  <h3>Alur Khusus — Tebu Lokal (Asal Kudus)</h3>
+  <div class="card">
+    <p>Truk tebu lokal dari wilayah Kudus <strong>tidak melewati pos pantau</strong> dan langsung menuju area timbangan/penerimaan di pabrik. Data tebu lokal dicatat langsung oleh petugas pabrik melalui sistem timbangan internal, sehingga tidak termasuk dalam cakupan aplikasi pos pantau ini. Namun, kedua alur (lokal & luar) akan bertemu di database pusat untuk pelaporan terpadu.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  TAB 2 — KEAMANAN DATA PER POS (BARU)         -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="keamanan" class="tab-content">
+  <h2>Keamanan & Keakuratan Data per Pos <span class="update-badge">BARU</span></h2>
+  <p class="section-desc">Mekanisme validasi berlapis untuk memastikan setiap data truk hanya bisa diinput oleh petugas yang bertugas di pos tersebut, dengan timestamp server dan binding pos_id + user_id yang ketat.</p>
+
+  <!-- PRINSIP KEAMANAN -->
+  <h3>Prinsip Keamanan Data</h3>
+  <div class="card card-red">
+    <h4>Aturan Utama</h4>
+    <p>Setiap entri data truk di sistem <strong>HARUS</strong> memenuhi ketiga syarat berikut:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>#</th><th>Syarat</th><th>Implementasi</th><th>Konsekuensi Jika Gagal</th></tr>
+        <tr>
+          <td><strong>1</strong></td>
+          <td>Terikat pada <code>pos_id</code> petugas</td>
+          <td>Backend memverifikasi <code>petugas.pos_id == request.pos_id</code></td>
+          <td>HTTP 403 — Transaksi ditolak</td>
+        </tr>
+        <tr>
+          <td><strong>2</strong></td>
+          <td>Terikat pada <code>user_id</code> yang login</td>
+          <td><code>petugas_id</code> diambil dari JWT token, bukan dari request body</td>
+          <td>Tidak bisa dipalsukan oleh client</td>
+        </tr>
+        <tr>
+          <td><strong>3</strong></td>
+          <td>Timestamp dari server</td>
+          <td><code>server_timestamp = NOW()</code> di database, bukan dari device</td>
+          <td>Mencegah manipulasi waktu pencatatan</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- BACKEND VALIDATION -->
+  <h3>A. Validasi Backend — Pos Binding</h3>
+  <div class="card card-blue">
+    <h4>Middleware: Validate Pos Assignment</h4>
+    <p>Setiap request ke endpoint <code>POST /api/transaksi</code> melewati middleware yang memastikan petugas hanya bisa submit ke pos yang ditugaskan.</p>
+    <div class="code-block">
+<span class="comment">// Middleware: validatePosAssignment</span>
+<span class="kw">async function</span> <span class="fn">validatePosAssignment</span>(req, res, next) {
+    <span class="comment">// 1. Ambil petugas_id dari JWT token (bukan dari request body)</span>
+    <span class="kw">const</span> petugasId = req.user.id;
+
+    <span class="comment">// 2. Query pos_id yang ditugaskan ke petugas ini</span>
+    <span class="kw">const</span> petugas = <span class="kw">await</span> db.<span class="fn">query</span>(
+        <span class="str">'SELECT pos_id FROM petugas WHERE id = $1 AND is_active = TRUE'</span>,
+        [petugasId]
+    );
+
+    <span class="kw">if</span> (!petugas.rows[0]) {
+        <span class="kw">return</span> res.<span class="fn">status</span>(403).<span class="fn">json</span>({
+            error: <span class="str">'Akun petugas tidak aktif atau tidak ditemukan'</span>
+        });
+    }
+
+    <span class="comment">// 3. Bandingkan pos_id petugas dengan pos_id di request</span>
+    <span class="kw">const</span> assignedPosId = petugas.rows[0].pos_id;
+    <span class="kw">const</span> requestedPosId = req.body.pos_id;
+
+    <span class="kw">if</span> (assignedPosId !== requestedPosId) {
+        <span class="comment">// LOG: Percobaan submit lintas pos (possible fraud)</span>
+        <span class="kw">await</span> <span class="fn">logSecurityEvent</span>({
+            type: <span class="str">'CROSS_POS_ATTEMPT'</span>,
+            petugas_id: petugasId,
+            assigned_pos: assignedPosId,
+            attempted_pos: requestedPosId,
+            ip: req.ip,
+            timestamp: <span class="kw">new</span> Date()
+        });
+
+        <span class="kw">return</span> res.<span class="fn">status</span>(403).<span class="fn">json</span>({
+            error: <span class="str">'Anda tidak ditugaskan di pos ini'</span>,
+            detail: <span class="str">'Hubungi admin jika ada perubahan penugasan'</span>
+        });
+    }
+
+    <span class="comment">// 4. Inject data terverifikasi ke request</span>
+    req.verifiedPosId = assignedPosId;
+    req.verifiedPetugasId = petugasId;
+    <span class="fn">next</span>();
+}
+    </div>
+  </div>
+
+  <div class="card card-blue">
+    <h4>Endpoint: Submit Transaksi (Secured)</h4>
+    <p>Endpoint menggunakan <code>verifiedPosId</code> dan <code>verifiedPetugasId</code> dari middleware, bukan dari request body client.</p>
+    <div class="code-block">
+<span class="comment">// POST /api/transaksi — Submit data truk (secured)</span>
+router.<span class="fn">post</span>(<span class="str">'/api/transaksi'</span>,
+    <span class="fn">authenticate</span>,          <span class="comment">// JWT verification</span>
+    <span class="fn">validatePosAssignment</span>,  <span class="comment">// Pos binding check</span>
+    <span class="fn">validateGeofence</span>,       <span class="comment">// GPS radius check</span>
+    <span class="kw">async</span> (req, res) => {
+
+    <span class="kw">const</span> result = <span class="kw">await</span> db.<span class="fn">query</span>(<span class="str">`
+        INSERT INTO transaksi_pos (
+            kontrak_id, pos_id, petugas_id, no_plat,
+            foto_truk_url, foto_muatan_url,
+            gps_lat, gps_lng, gps_accuracy,
+            is_mock_detected, device_id,
+            device_timestamp, catatan
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        RETURNING id, server_timestamp`</span>,
+        [
+            req.body.kontrak_id,
+            req.verifiedPosId,       <span class="comment">// dari middleware, BUKAN req.body</span>
+            req.verifiedPetugasId,   <span class="comment">// dari JWT, BUKAN req.body</span>
+            req.body.no_plat,
+            req.body.foto_truk_url,
+            req.body.foto_muatan_url,
+            req.body.gps_lat,
+            req.body.gps_lng,
+            req.body.gps_accuracy,
+            req.body.is_mock_detected,
+            req.body.device_id,
+            req.body.device_timestamp, <span class="comment">// disimpan sbg referensi</span>
+            req.body.catatan
+        ]
+    );
+
+    <span class="comment">// server_timestamp otomatis diisi NOW() oleh DB</span>
+    <span class="comment">// wa_status default 'pending' — akan diproses cron 22:00</span>
+
+    res.<span class="fn">json</span>({
+        success: <span class="str">true</span>,
+        transaksi_id: result.rows[0].id,
+        server_timestamp: result.rows[0].server_timestamp
+    });
+});
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- TIMESTAMP POLICY -->
+  <h3>B. Kebijakan Timestamp</h3>
+  <div class="card card-green">
+    <h4>Dual Timestamp Strategy</h4>
+    <p>Sistem menyimpan <strong>dua timestamp</strong> untuk setiap transaksi:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Field</th><th>Sumber</th><th>Tujuan</th><th>Bisa Dimanipulasi?</th></tr>
+        <tr>
+          <td><code>server_timestamp</code></td>
+          <td><code>NOW()</code> di PostgreSQL</td>
+          <td><strong>Timestamp resmi</strong> — digunakan untuk laporan, audit, dan notifikasi</td>
+          <td style="color:var(--green-primary);font-weight:700;">TIDAK</td>
+        </tr>
+        <tr>
+          <td><code>device_timestamp</code></td>
+          <td>Clock di HP petugas</td>
+          <td>Referensi — untuk deteksi anomali jika ada selisih besar dengan server</td>
+          <td style="color:var(--red-accent);font-weight:700;">YA (oleh petugas)</td>
+        </tr>
+      </table>
+    </div>
+    <p>Jika selisih antara <code>device_timestamp</code> dan <code>server_timestamp</code> lebih dari 10 menit, sistem otomatis membuat flag <code>time_anomaly = TRUE</code> untuk ditinjau admin.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- FOTO & GPS VALIDATION -->
+  <h3>C. Validasi Foto & GPS per Entri</h3>
+  <div class="card card-orange">
+    <h4>Data yang Wajib Tersimpan per Entri Truk</h4>
+    <p>Setiap record di <code>transaksi_pos</code> menyimpan bukti lengkap:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Data</th><th>Field</th><th>Validasi</th></tr>
+        <tr><td>Foto truk (depan)</td><td><code>foto_truk_url</code></td><td>Wajib ada, harus dari kamera app (bukan galeri)</td></tr>
+        <tr><td>Foto muatan tebu</td><td><code>foto_muatan_url</code></td><td>Wajib ada, EXIF metadata dicek</td></tr>
+        <tr><td>Koordinat GPS</td><td><code>gps_lat</code>, <code>gps_lng</code></td><td>Harus dalam radius 200m dari pos</td></tr>
+        <tr><td>Akurasi GPS</td><td><code>gps_accuracy</code></td><td>Jika > 50 meter, diberi warning</td></tr>
+        <tr><td>Mock GPS flag</td><td><code>is_mock_detected</code></td><td>Jika TRUE, transaksi ditolak</td></tr>
+        <tr><td>Device ID</td><td><code>device_id</code></td><td>Untuk audit trail, deteksi device sharing</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECURITY LOG -->
+  <h3>D. Security Audit Log</h3>
+  <div class="card card-red">
+    <h4>Tabel: security_log (Baru)</h4>
+    <p>Setiap percobaan yang mencurigakan dicatat di tabel terpisah untuk audit:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Event Type</th><th>Trigger</th><th>Data yang Disimpan</th></tr>
+        <tr><td><code>CROSS_POS_ATTEMPT</code></td><td>Petugas mencoba submit ke pos lain</td><td>petugas_id, pos yang ditugaskan, pos yang dicoba, IP, waktu</td></tr>
+        <tr><td><code>MOCK_GPS_DETECTED</code></td><td>Fake GPS terdeteksi</td><td>petugas_id, pos_id, koordinat palsu, device_id</td></tr>
+        <tr><td><code>TIME_ANOMALY</code></td><td>Selisih device vs server > 10 menit</td><td>petugas_id, device_time, server_time, selisih</td></tr>
+        <tr><td><code>DUPLICATE_TRUCK</code></td><td>Pelat yang sama tercatat 2x di hari yang sama di pos yang sama</td><td>no_plat, pos_id, transaksi_id sebelumnya</td></tr>
+        <tr><td><code>INACTIVE_USER_ATTEMPT</code></td><td>User non-aktif mencoba login/submit</td><td>username, IP, waktu</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ISOLASI DATA -->
+  <h3>E. Isolasi Data antar Pos</h3>
+  <div class="card card-green">
+    <h4>Prinsip: Petugas Hanya Akses Data Posnya</h4>
+    <p>Semua query data di dashboard pos menggunakan filter <code>WHERE pos_id = :logged_in_user_pos_id</code>. Tidak ada mekanisme bagi petugas untuk melihat atau memodifikasi data pos lain. Hanya admin pusat yang bisa melihat data lintas pos.</p>
+    <div class="code-block">
+<span class="comment">// Middleware: scopeToUserPos — diterapkan di semua GET endpoint petugas</span>
+<span class="kw">function</span> <span class="fn">scopeToUserPos</span>(req, res, next) {
+    <span class="comment">// Inject filter pos_id ke semua query</span>
+    req.posScope = req.user.pos_id;
+
+    <span class="comment">// Jika ada query param pos_id yang berbeda, tolak</span>
+    <span class="kw">if</span> (req.query.pos_id && req.query.pos_id != req.user.pos_id) {
+        <span class="kw">return</span> res.<span class="fn">status</span>(403).<span class="fn">json</span>({
+            error: <span class="str">'Tidak memiliki akses ke data pos lain'</span>
+        });
+    }
+    <span class="fn">next</span>();
+}
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  TAB 3 — SOLUSI TEKNIS                         -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="teknis" class="tab-content">
+  <h2>Solusi Teknis</h2>
+  <p class="section-desc">Detail implementasi teknis untuk fitur keamanan anti-fake GPS, OCR pelat nomor, dan integrasi notifikasi WhatsApp.</p>
+
+  <!-- ANTI FAKE GPS -->
+  <h3>A. Anti-Fake GPS — Strategi Multi-Layer</h3>
+  <p>Manipulasi GPS (fake GPS) adalah risiko utama di lapangan. Solusinya bukan hanya satu metode, tetapi kombinasi beberapa layer pertahanan:</p>
+
+  <div class="card card-red">
+    <h4>Layer 1 — Mock Location Provider Detection</h4>
+    <p>Pada Android, fake GPS bekerja sebagai "Mock Location Provider". Aplikasi mendeteksi ini melalui:</p>
+    <div class="code-block">
+<span class="comment">// Android — Cek apakah Mock Location aktif</span>
+<span class="kw">fun</span> <span class="fn">isMockLocationEnabled</span>(location: Location): Boolean {
+    <span class="comment">// API 18+ — cek flag isFromMockProvider</span>
+    <span class="kw">if</span> (Build.VERSION.SDK_INT >= 18) {
+        <span class="kw">return</span> location.<span class="fn">isFromMockProvider</span>
+    }
+    <span class="comment">// Fallback — cek Settings</span>
+    <span class="kw">return</span> Settings.Secure.<span class="fn">getString</span>(
+        context.contentResolver,
+        Settings.Secure.ALLOW_MOCK_LOCATION
+    ) != <span class="str">"0"</span>
+}
+    </div>
+    <p>Jika terdeteksi mock location, aplikasi langsung menolak dan menampilkan peringatan.</p>
+  </div>
+
+  <div class="card card-red">
+    <h4>Layer 2 — Sensor Fusion Verification</h4>
+    <p>Fake GPS hanya memalsukan koordinat, tetapi tidak bisa memalsukan data sensor perangkat. Sistem melakukan cross-check:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Sensor</th><th>Pengecekan</th><th>Indikasi Fake</th></tr>
+        <tr><td>Cell Tower ID</td><td>Bandingkan lokasi GPS vs lokasi cell tower terdekat</td><td>Jarak GPS vs cell tower > 5 km</td></tr>
+        <tr><td>Wi-Fi SSID</td><td>Scan Wi-Fi sekitar, cocokkan dengan database pos</td><td>Wi-Fi pos tidak terdeteksi</td></tr>
+        <tr><td>Accelerometer</td><td>Deteksi gerakan natural (HP dipegang orang berdiri)</td><td>Sensor statis sempurna (emulator)</td></tr>
+        <tr><td>NMEA Satellite</td><td>Cek jumlah satelit GPS yang terhubung</td><td>Jumlah satelit = 0 (mock)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card card-red">
+    <h4>Layer 3 — Geofence Validation (Server-Side)</h4>
+    <p>Server menyimpan koordinat presisi setiap pos pantau. Saat data masuk, server menghitung jarak antara koordinat GPS yang dilaporkan dengan koordinat pos pantau menggunakan formula Haversine:</p>
+    <div class="code-block">
+<span class="comment">// Server-side geofence validation</span>
+<span class="kw">function</span> <span class="fn">validateGeofence</span>(reportedLat, reportedLng, postId) {
+    <span class="kw">const</span> post = <span class="fn">getPostCoordinates</span>(postId);
+    <span class="kw">const</span> distance = <span class="fn">haversineDistance</span>(
+        reportedLat, reportedLng,
+        post.lat, post.lng
+    );
+
+    <span class="kw">const</span> MAX_RADIUS = <span class="str">200</span>; <span class="comment">// meter</span>
+
+    <span class="kw">if</span> (distance > MAX_RADIUS) {
+        <span class="kw">throw new</span> Error(<span class="str">`Lokasi diluar radius pos (${distance}m)`</span>);
+    }
+    <span class="kw">return</span> { valid: <span class="str">true</span>, distance };
+}
+    </div>
+    <p>Radius toleransi: <strong>200 meter</strong> dari titik pusat pos pantau. Jika diluar radius, transaksi ditolak.</p>
+  </div>
+
+  <div class="card card-red">
+    <h4>Layer 4 — Foto Metadata & Integrity Check</h4>
+    <p>Foto yang diambil harus memiliki EXIF metadata dengan GPS coordinates, timestamp, dan device info. Sistem memastikan foto diambil langsung dari kamera aplikasi (bukan dari galeri) dengan meng-embed watermark invisible berisi hash koordinat GPS + timestamp. Ini mencegah petugas mengirim foto lama atau foto dari lokasi lain.</p>
+  </div>
+
+  <div class="card">
+    <h4>Layer 5 — Anomaly Detection (Opsional Lanjutan)</h4>
+    <p>Sistem backend memantau pola abnormal, seperti: petugas yang selalu submit tepat di koordinat yang sama persis (natural GPS selalu bervariasi 5-15 meter), waktu perjalanan antar submit yang tidak masuk akal (misalnya submit di Pos Jepara dan 10 menit kemudian di Pos Pati), atau lonjakan submit di luar jam operasional.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- OCR PELAT NOMOR -->
+  <h3>B. OCR Pelat Nomor — Identifikasi Truk Otomatis</h3>
+
+  <div class="card card-blue">
+    <h4>Arsitektur OCR</h4>
+    <p>Menggunakan pendekatan <strong>hybrid on-device + server</strong>:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Komponen</th><th>Teknologi</th><th>Keterangan</th></tr>
+        <tr><td>On-Device (Primary)</td><td>Google ML Kit Text Recognition</td><td>Berjalan di HP tanpa internet, latensi rendah (~300ms)</td></tr>
+        <tr><td>Server Fallback</td><td>Google Cloud Vision API / PaddleOCR</td><td>Dipanggil jika on-device gagal atau confidence < 80%</td></tr>
+        <tr><td>Post-Processing</td><td>Regex Pattern Matching</td><td>Validasi format pelat Indonesia: AB 1234 CD</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card card-blue">
+    <h4>Alur OCR</h4>
+    <p>1) Petugas mengarahkan kamera ke pelat nomor → 2) ML Kit mendeteksi area teks secara real-time → 3) Hasil OCR difilter dengan regex pelat Indonesia <code>/^[A-Z]{1,2}\s?\d{1,4}\s?[A-Z]{0,3}$/</code> → 4) Jika confidence &ge; 80%, nomor otomatis terisi ke field input → 5) Petugas memverifikasi dan koreksi jika perlu → 6) Jika confidence &lt; 80%, foto dikirim ke server untuk diproses ulang.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- WHATSAPP INTEGRATION (UPDATED) -->
+  <h3>C. Integrasi WhatsApp — Ringkasan Harian Jam 22:00 WIB <span class="update-badge">DIPERBARUI</span></h3>
+
+  <div class="card card-orange">
+    <h4>Perubahan Mekanisme Pengiriman</h4>
+    <p>Sebelumnya: pesan WhatsApp dikirim <strong>per truk secara real-time</strong> setiap kali data di-submit. Masalah: jika satu kontrak mengirim 10 truk dalam sehari, petani menerima 10 pesan terpisah — ini mengganggu dan terkesan spam.</p>
+    <p><strong>Mekanisme baru:</strong> Semua data truk dikumpulkan sepanjang hari, lalu <strong>satu pesan ringkasan dikirim per nomor kontrak pada jam 22:00 WIB</strong>. Petani hanya menerima maksimal 1 pesan per hari per kontrak.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Aspek</th><th>Sebelum (v1.0)</th><th>Sesudah (v1.1)</th></tr>
+        <tr><td>Waktu kirim</td><td>Real-time setiap submit</td><td><strong>Jam 22:00 WIB (cron job)</strong></td></tr>
+        <tr><td>Jumlah pesan per hari</td><td>1 pesan per truk</td><td><strong>1 pesan per kontrak (ringkasan)</strong></td></tr>
+        <tr><td>Isi pesan</td><td>Detail 1 truk</td><td><strong>Total truk + daftar semua pelat nomor + pos</strong></td></tr>
+        <tr><td>Risiko spam</td><td>Tinggi (banyak truk = banyak pesan)</td><td><strong>Minimal (maks 1 pesan/kontrak/hari)</strong></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card card-green">
+    <h4>Opsi Gateway WhatsApp</h4>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Opsi</th><th>Kelebihan</th><th>Kekurangan</th><th>Biaya</th></tr>
+        <tr><td><strong>Fonnte.com</strong> (Rekomendasi)</td><td>Mudah integrasi, API sederhana, server lokal Indonesia</td><td>Unofficial API, risiko banned</td><td>Mulai Rp 100rb/bulan</td></tr>
+        <tr><td>WhatsApp Business API (Meta)</td><td>Official, stabil, tidak di-ban</td><td>Proses approval lama, biaya per pesan</td><td>~Rp 500/pesan</td></tr>
+        <tr><td>Wablas / Starsender</td><td>Alternatif lokal, murah</td><td>Unofficial, uptime bervariasi</td><td>Rp 80-150rb/bulan</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card card-green">
+    <h4>Template Pesan WhatsApp — Ringkasan Harian <span class="update-badge">BARU</span></h4>
+    <div class="code-block">
+✅ <span class="str">*LAPORAN HARIAN PENCATATAN TEBU*</span>
+━━━━━━━━━━━━━━━━━━
+Yth. Bapak/Ibu <span class="type">{nama_petani}</span>,
+
+Berikut ringkasan pencatatan tebu Anda
+hari ini (<span class="type">{tanggal}</span>):
+
+📋 No. Kontrak  : <span class="type">{no_kontrak}</span>
+🚛 Total Truk   : <span class="type">{jumlah_truk}</span> unit
+
+Detail truk yang tercatat:
+<span class="type">{daftar_truk}</span>
+<span class="comment">  contoh isi daftar_truk:</span>
+<span class="comment">  1. K 8234 AB — Pos Jepara (10:23)</span>
+<span class="comment">  2. K 1567 CD — Pos Jepara (13:45)</span>
+<span class="comment">  3. H 9921 EF — Pos Pati (15:12)</span>
+
+Seluruh truk sedang/sudah dalam
+perjalanan menuju PG Rendeng Kudus.
+
+<span class="comment">Terima kasih. — Sistem PG Rendeng</span>
+    </div>
+  </div>
+
+  <div class="card card-green">
+    <h4>Cron Job — Kirim Ringkasan Jam 22:00 WIB <span class="update-badge">BARU</span></h4>
+    <div class="code-block">
+<span class="comment">// Cron Job: Setiap hari jam 22:00 WIB (UTC+7)</span>
+<span class="comment">// Crontab: 0 22 * * * (atau 0 15 * * * UTC)</span>
+
+<span class="kw">async function</span> <span class="fn">sendDailyWhatsAppSummary</span>() {
+    <span class="kw">const</span> today = <span class="kw">new</span> Date().<span class="fn">toISOString</span>().<span class="fn">slice</span>(0, 10);
+
+    <span class="comment">// 1. Ambil semua transaksi hari ini, grup per kontrak</span>
+    <span class="kw">const</span> summaries = <span class="kw">await</span> db.<span class="fn">query</span>(<span class="str">`
+        SELECT
+            k.no_kontrak,
+            p.nama AS nama_petani,
+            p.no_wa,
+            COUNT(t.id) AS jumlah_truk,
+            JSON_AGG(
+                JSON_BUILD_OBJECT(
+                    'no_plat', t.no_plat,
+                    'nama_pos', pp.nama_pos,
+                    'waktu', TO_CHAR(t.server_timestamp, 'HH24:MI')
+                ) ORDER BY t.server_timestamp
+            ) AS daftar_truk
+        FROM transaksi_pos t
+        JOIN kontrak k ON t.kontrak_id = k.id
+        JOIN petani p ON k.petani_id = p.id
+        JOIN pos_pantau pp ON t.pos_id = pp.id
+        WHERE DATE(t.server_timestamp) = $1
+          AND t.wa_status = 'pending'
+        GROUP BY k.no_kontrak, p.nama, p.no_wa
+    `</span>, [today]);
+
+    <span class="comment">// 2. Kirim 1 pesan per kontrak</span>
+    <span class="kw">for</span> (<span class="kw">const</span> summary <span class="kw">of</span> summaries.rows) {
+        <span class="kw">const</span> message = <span class="fn">buildDailySummaryTemplate</span>(summary);
+
+        <span class="kw">try</span> {
+            <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.fonnte.com/send'</span>, {
+                method: <span class="str">'POST'</span>,
+                headers: {
+                    <span class="str">'Authorization'</span>: process.env.FONNTE_TOKEN,
+                    <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>
+                },
+                body: JSON.<span class="fn">stringify</span>({
+                    target: summary.no_wa,
+                    message: message,
+                    countryCode: <span class="str">'62'</span>
+                })
+            });
+
+            <span class="comment">// Update semua transaksi kontrak ini hari ini</span>
+            <span class="kw">await</span> db.<span class="fn">query</span>(<span class="str">`
+                UPDATE transaksi_pos
+                SET wa_status = 'sent',
+                    wa_sent_at = NOW()
+                WHERE kontrak_id = (
+                    SELECT id FROM kontrak
+                    WHERE no_kontrak = $1
+                )
+                AND DATE(server_timestamp) = $2
+            `</span>, [summary.no_kontrak, today]);
+
+        } <span class="kw">catch</span> (err) {
+            <span class="comment">// Masukkan ke retry queue (max 3 retry)</span>
+            <span class="kw">await</span> <span class="fn">addToRetryQueue</span>(summary.no_kontrak, today, 3);
+        }
+    }
+
+    console.<span class="fn">log</span>(<span class="str">`[${today}] Ringkasan WA terkirim: ${summaries.rows.length} kontrak`</span>);
+}
+    </div>
+    <p>Sistem retry: jika pengiriman gagal, pesan masuk ke queue dan dicoba ulang hingga 3 kali dengan interval 5 menit. Status pengiriman disimpan di database untuk audit trail. Jika semua retry gagal, status berubah ke <code>failed</code> dan admin mendapat notifikasi.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  TAB 4 — DATABASE                              -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="database" class="tab-content">
+  <h2>Rancangan Database</h2>
+  <p class="section-desc">Skema database relasional (PostgreSQL) dengan 6 tabel utama (+1 tabel baru: security_log) beserta relasi antar tabel. <span class="update-badge">DIPERBARUI</span></p>
+
+  <!-- ER Diagram Visual -->
+  <h3>Entity-Relationship Diagram</h3>
+  <div class="er-grid">
+
+    <!-- TABEL: petani -->
+    <div class="er-table">
+      <div class="er-table-head">🧑‍🌾 petani</div>
+      <div class="er-table-body">
+        <div class="er-field"><span class="fname">id</span> <span><span class="fpk">PK</span> <span class="ftype">SERIAL</span></span></div>
+        <div class="er-field"><span class="fname">nama</span> <span class="ftype">VARCHAR(100)</span></div>
+        <div class="er-field"><span class="fname">alamat</span> <span class="ftype">TEXT</span></div>
+        <div class="er-field"><span class="fname">no_wa</span> <span class="ftype">VARCHAR(15)</span></div>
+        <div class="er-field"><span class="fname">no_ktp</span> <span class="ftype">VARCHAR(16)</span></div>
+        <div class="er-field"><span class="fname">created_at</span> <span class="ftype">TIMESTAMP</span></div>
+      </div>
+    </div>
+
+    <!-- TABEL: kontrak -->
+    <div class="er-table">
+      <div class="er-table-head">📋 kontrak</div>
+      <div class="er-table-body">
+        <div class="er-field"><span class="fname">id</span> <span><span class="fpk">PK</span> <span class="ftype">SERIAL</span></span></div>
+        <div class="er-field"><span class="fname">no_kontrak</span> <span class="ftype">VARCHAR(20) UNIQUE</span></div>
+        <div class="er-field"><span class="fname">petani_id</span> <span><span class="ffk">FK</span> <span class="ftype">INT → petani.id</span></span></div>
+        <div class="er-field"><span class="fname">periode_giling</span> <span class="ftype">VARCHAR(10)</span></div>
+        <div class="er-field"><span class="fname">estimasi_ton</span> <span class="ftype">DECIMAL(10,2)</span></div>
+        <div class="er-field"><span class="fname">asal_wilayah</span> <span class="ftype">VARCHAR(50)</span></div>
+        <div class="er-field"><span class="fname">jenis</span> <span class="ftype">ENUM('lokal','luar')</span></div>
+        <div class="er-field"><span class="fname">status</span> <span class="ftype">ENUM('aktif','selesai')</span></div>
+        <div class="er-field"><span class="fname">created_at</span> <span class="ftype">TIMESTAMP</span></div>
+      </div>
+    </div>
+
+    <!-- TABEL: pos_pantau -->
+    <div class="er-table">
+      <div class="er-table-head">📍 pos_pantau</div>
+      <div class="er-table-body">
+        <div class="er-field"><span class="fname">id</span> <span><span class="fpk">PK</span> <span class="ftype">SERIAL</span></span></div>
+        <div class="er-field"><span class="fname">nama_pos</span> <span class="ftype">VARCHAR(50)</span></div>
+        <div class="er-field"><span class="fname">latitude</span> <span class="ftype">DECIMAL(10,8)</span></div>
+        <div class="er-field"><span class="fname">longitude</span> <span class="ftype">DECIMAL(11,8)</span></div>
+        <div class="er-field"><span class="fname">radius_meter</span> <span class="ftype">INT DEFAULT 200</span></div>
+        <div class="er-field"><span class="fname">alamat</span> <span class="ftype">TEXT</span></div>
+        <div class="er-field"><span class="fname">is_active</span> <span class="ftype">BOOLEAN</span></div>
+      </div>
+    </div>
+
+    <!-- TABEL: petugas -->
+    <div class="er-table">
+      <div class="er-table-head">👤 petugas</div>
+      <div class="er-table-body">
+        <div class="er-field"><span class="fname">id</span> <span><span class="fpk">PK</span> <span class="ftype">SERIAL</span></span></div>
+        <div class="er-field"><span class="fname">nama</span> <span class="ftype">VARCHAR(100)</span></div>
+        <div class="er-field"><span class="fname">username</span> <span class="ftype">VARCHAR(50) UNIQUE</span></div>
+        <div class="er-field"><span class="fname">password_hash</span> <span class="ftype">VARCHAR(255)</span></div>
+        <div class="er-field"><span class="fname">pos_id</span> <span><span class="ffk">FK</span> <span class="ftype">INT → pos_pantau.id</span></span></div>
+        <div class="er-field"><span class="fname">no_hp</span> <span class="ftype">VARCHAR(15)</span></div>
+        <div class="er-field"><span class="fname">role</span> <span class="ftype">ENUM('petugas','admin')</span></div>
+        <div class="er-field"><span class="fname">is_active</span> <span class="ftype">BOOLEAN</span></div>
+      </div>
+    </div>
+
+    <!-- TABEL: transaksi_pos (UPDATED) -->
+    <div class="er-table" style="grid-column: 1 / -1;">
+      <div class="er-table-head">🚛 transaksi_pos (Tabel Utama) <span class="update-badge">DIPERBARUI</span></div>
+      <div class="er-table-body">
+        <div class="er-field"><span class="fname">id</span> <span><span class="fpk">PK</span> <span class="ftype">SERIAL</span></span></div>
+        <div class="er-field"><span class="fname">kontrak_id</span> <span><span class="ffk">FK</span> <span class="ftype">INT → kontrak.id</span></span></div>
+        <div class="er-field"><span class="fname">pos_id</span> <span><span class="ffk">FK</span> <span class="ftype">INT → pos_pantau.id</span></span></div>
+        <div class="er-field"><span class="fname">petugas_id</span> <span><span class="ffk">FK</span> <span class="ftype">INT → petugas.id</span></span></div>
+        <div class="er-field"><span class="fname">no_plat</span> <span class="ftype">VARCHAR(15)</span></div>
+        <div class="er-field"><span class="fname">foto_truk_url</span> <span class="ftype">TEXT</span></div>
+        <div class="er-field"><span class="fname">foto_muatan_url</span> <span class="ftype">TEXT</span></div>
+        <div class="er-field"><span class="fname">gps_lat</span> <span class="ftype">DECIMAL(10,8)</span></div>
+        <div class="er-field"><span class="fname">gps_lng</span> <span class="ftype">DECIMAL(11,8)</span></div>
+        <div class="er-field"><span class="fname">gps_accuracy</span> <span class="ftype">DECIMAL(6,2)</span></div>
+        <div class="er-field"><span class="fname">is_mock_detected</span> <span class="ftype">BOOLEAN</span></div>
+        <div class="er-field"><span class="fname">device_id</span> <span class="ftype">VARCHAR(100)</span></div>
+        <div class="er-field er-field-new"><span class="fname">server_timestamp</span> <span class="ftype">TIMESTAMP DEFAULT NOW() <span class="update-badge">BARU</span></span></div>
+        <div class="er-field er-field-new"><span class="fname">device_timestamp</span> <span class="ftype">TIMESTAMP <span class="update-badge">BARU</span></span></div>
+        <div class="er-field er-field-new"><span class="fname">time_anomaly</span> <span class="ftype">BOOLEAN DEFAULT FALSE <span class="update-badge">BARU</span></span></div>
+        <div class="er-field"><span class="fname">wa_status</span> <span class="ftype">ENUM('pending','sent','failed')</span></div>
+        <div class="er-field"><span class="fname">wa_sent_at</span> <span class="ftype">TIMESTAMP NULL</span></div>
+        <div class="er-field"><span class="fname">catatan</span> <span class="ftype">TEXT NULL</span></div>
+        <div class="er-field"><span class="fname">created_at</span> <span class="ftype">TIMESTAMP DEFAULT NOW()</span></div>
+      </div>
+    </div>
+
+    <!-- TABEL: security_log (BARU) -->
+    <div class="er-table" style="border-color: var(--red-accent);">
+      <div class="er-table-head" style="background: var(--red-accent);">🛡️ security_log <span class="update-badge" style="background:white;color:var(--red-accent);">BARU</span></div>
+      <div class="er-table-body">
+        <div class="er-field er-field-new"><span class="fname">id</span> <span><span class="fpk">PK</span> <span class="ftype">SERIAL</span></span></div>
+        <div class="er-field er-field-new"><span class="fname">event_type</span> <span class="ftype">VARCHAR(50)</span></div>
+        <div class="er-field er-field-new"><span class="fname">petugas_id</span> <span><span class="ffk">FK</span> <span class="ftype">INT → petugas.id</span></span></div>
+        <div class="er-field er-field-new"><span class="fname">pos_id</span> <span><span class="ffk">FK</span> <span class="ftype">INT → pos_pantau.id NULL</span></span></div>
+        <div class="er-field er-field-new"><span class="fname">detail</span> <span class="ftype">JSONB</span></div>
+        <div class="er-field er-field-new"><span class="fname">ip_address</span> <span class="ftype">INET</span></div>
+        <div class="er-field er-field-new"><span class="fname">created_at</span> <span class="ftype">TIMESTAMP DEFAULT NOW()</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SQL DDL -->
+  <h3>SQL — Data Definition (DDL)</h3>
+
+  <div class="code-block">
+<span class="comment">-- =============================================</span>
+<span class="comment">-- TABEL: petani</span>
+<span class="comment">-- =============================================</span>
+<span class="kw">CREATE TABLE</span> <span class="type">petani</span> (
+    id          <span class="type">SERIAL PRIMARY KEY</span>,
+    nama        <span class="type">VARCHAR</span>(100) <span class="kw">NOT NULL</span>,
+    alamat      <span class="type">TEXT</span>,
+    no_wa       <span class="type">VARCHAR</span>(15) <span class="kw">NOT NULL</span>,
+    no_ktp      <span class="type">VARCHAR</span>(16) <span class="kw">UNIQUE</span>,
+    created_at  <span class="type">TIMESTAMP</span> <span class="kw">DEFAULT NOW</span>()
+);
+
+<span class="comment">-- =============================================</span>
+<span class="comment">-- TABEL: kontrak</span>
+<span class="comment">-- =============================================</span>
+<span class="kw">CREATE TABLE</span> <span class="type">kontrak</span> (
+    id              <span class="type">SERIAL PRIMARY KEY</span>,
+    no_kontrak      <span class="type">VARCHAR</span>(20) <span class="kw">UNIQUE NOT NULL</span>,
+    petani_id       <span class="type">INT</span> <span class="kw">REFERENCES</span> petani(id),
+    periode_giling  <span class="type">VARCHAR</span>(10),
+    estimasi_ton    <span class="type">DECIMAL</span>(10,2),
+    asal_wilayah    <span class="type">VARCHAR</span>(50),
+    jenis           <span class="type">VARCHAR</span>(10) <span class="kw">CHECK</span> (jenis <span class="kw">IN</span> (<span class="str">'lokal'</span>,<span class="str">'luar'</span>)),
+    status          <span class="type">VARCHAR</span>(10) <span class="kw">DEFAULT</span> <span class="str">'aktif'</span>,
+    created_at      <span class="type">TIMESTAMP</span> <span class="kw">DEFAULT NOW</span>()
+);
+
+<span class="comment">-- =============================================</span>
+<span class="comment">-- TABEL: pos_pantau</span>
+<span class="comment">-- =============================================</span>
+<span class="kw">CREATE TABLE</span> <span class="type">pos_pantau</span> (
+    id            <span class="type">SERIAL PRIMARY KEY</span>,
+    nama_pos      <span class="type">VARCHAR</span>(50) <span class="kw">NOT NULL</span>,
+    latitude      <span class="type">DECIMAL</span>(10,8) <span class="kw">NOT NULL</span>,
+    longitude     <span class="type">DECIMAL</span>(11,8) <span class="kw">NOT NULL</span>,
+    radius_meter  <span class="type">INT</span> <span class="kw">DEFAULT</span> 200,
+    alamat        <span class="type">TEXT</span>,
+    is_active     <span class="type">BOOLEAN</span> <span class="kw">DEFAULT TRUE</span>
+);
+
+<span class="comment">-- Seed data 6 Pos Pantau</span>
+<span class="kw">INSERT INTO</span> <span class="type">pos_pantau</span> (nama_pos, latitude, longitude) <span class="kw">VALUES</span>
+    (<span class="str">'Pos Jepara'</span>,   -6.5912, 110.6714),
+    (<span class="str">'Pos Pati'</span>,     -6.7462, 111.0396),
+    (<span class="str">'Pos Rembang'</span>,  -6.7093, 111.3530),
+    (<span class="str">'Pos Japah'</span>,    -6.9400, 111.1700),
+    (<span class="str">'Pos Todanan'</span>,  -7.0200, 111.2100),
+    (<span class="str">'Pos Grobogan'</span>, -7.0200, 110.8800);
+
+<span class="comment">-- =============================================</span>
+<span class="comment">-- TABEL: petugas (UPDATED — tambah field role)</span>
+<span class="comment">-- =============================================</span>
+<span class="kw">CREATE TABLE</span> <span class="type">petugas</span> (
+    id            <span class="type">SERIAL PRIMARY KEY</span>,
+    nama          <span class="type">VARCHAR</span>(100) <span class="kw">NOT NULL</span>,
+    username      <span class="type">VARCHAR</span>(50) <span class="kw">UNIQUE NOT NULL</span>,
+    password_hash <span class="type">VARCHAR</span>(255) <span class="kw">NOT NULL</span>,
+    pos_id        <span class="type">INT</span> <span class="kw">REFERENCES</span> pos_pantau(id),
+    no_hp         <span class="type">VARCHAR</span>(15),
+    role          <span class="type">VARCHAR</span>(10) <span class="kw">DEFAULT</span> <span class="str">'petugas'</span>
+                  <span class="kw">CHECK</span> (role <span class="kw">IN</span> (<span class="str">'petugas'</span>, <span class="str">'admin'</span>)),
+    is_active     <span class="type">BOOLEAN</span> <span class="kw">DEFAULT TRUE</span>
+);
+
+<span class="comment">-- =============================================</span>
+<span class="comment">-- TABEL: transaksi_pos (UPDATED — tambah server/device timestamp)</span>
+<span class="comment">-- =============================================</span>
+<span class="kw">CREATE TABLE</span> <span class="type">transaksi_pos</span> (
+    id                <span class="type">SERIAL PRIMARY KEY</span>,
+    kontrak_id        <span class="type">INT</span> <span class="kw">REFERENCES</span> kontrak(id),
+    pos_id            <span class="type">INT</span> <span class="kw">REFERENCES</span> pos_pantau(id) <span class="kw">NOT NULL</span>,
+    petugas_id        <span class="type">INT</span> <span class="kw">REFERENCES</span> petugas(id) <span class="kw">NOT NULL</span>,
+    no_plat           <span class="type">VARCHAR</span>(15) <span class="kw">NOT NULL</span>,
+    foto_truk_url     <span class="type">TEXT</span>,
+    foto_muatan_url   <span class="type">TEXT</span>,
+    gps_lat           <span class="type">DECIMAL</span>(10,8),
+    gps_lng           <span class="type">DECIMAL</span>(11,8),
+    gps_accuracy      <span class="type">DECIMAL</span>(6,2),
+    is_mock_detected  <span class="type">BOOLEAN</span> <span class="kw">DEFAULT FALSE</span>,
+    device_id         <span class="type">VARCHAR</span>(100),
+    server_timestamp  <span class="type">TIMESTAMP</span> <span class="kw">DEFAULT NOW</span>(),  <span class="comment">-- BARU: waktu resmi dari server</span>
+    device_timestamp  <span class="type">TIMESTAMP</span>,                  <span class="comment">-- BARU: waktu dari HP (referensi)</span>
+    time_anomaly      <span class="type">BOOLEAN</span> <span class="kw">DEFAULT FALSE</span>,     <span class="comment">-- BARU: flag jika selisih > 10min</span>
+    wa_status         <span class="type">VARCHAR</span>(10) <span class="kw">DEFAULT</span> <span class="str">'pending'</span>,
+    wa_sent_at        <span class="type">TIMESTAMP</span>,
+    catatan           <span class="type">TEXT</span>,
+    created_at        <span class="type">TIMESTAMP</span> <span class="kw">DEFAULT NOW</span>(),
+
+    <span class="comment">-- CONSTRAINT: pastikan pos_id petugas cocok (enforced via trigger)</span>
+    <span class="kw">CONSTRAINT</span> chk_pos_petugas <span class="kw">CHECK</span> (pos_id <span class="kw">IS NOT NULL</span> <span class="kw">AND</span> petugas_id <span class="kw">IS NOT NULL</span>)
+);
+
+<span class="comment">-- TRIGGER: Validasi bahwa petugas.pos_id == transaksi.pos_id</span>
+<span class="kw">CREATE OR REPLACE FUNCTION</span> <span class="fn">validate_pos_binding</span>()
+<span class="kw">RETURNS TRIGGER AS</span> $$
+<span class="kw">DECLARE</span>
+    petugas_pos <span class="type">INT</span>;
+<span class="kw">BEGIN</span>
+    <span class="kw">SELECT</span> pos_id <span class="kw">INTO</span> petugas_pos
+    <span class="kw">FROM</span> petugas
+    <span class="kw">WHERE</span> id = NEW.petugas_id <span class="kw">AND</span> is_active = TRUE;
+
+    <span class="kw">IF</span> petugas_pos IS NULL <span class="kw">THEN</span>
+        <span class="kw">RAISE EXCEPTION</span> <span class="str">'Petugas tidak aktif atau tidak ditemukan'</span>;
+    <span class="kw">END IF</span>;
+
+    <span class="kw">IF</span> petugas_pos != NEW.pos_id <span class="kw">THEN</span>
+        <span class="kw">RAISE EXCEPTION</span> <span class="str">'Petugas (%) tidak ditugaskan di pos (%). Ditugaskan di pos (%)'</span>,
+            NEW.petugas_id, NEW.pos_id, petugas_pos;
+    <span class="kw">END IF</span>;
+
+    <span class="comment">-- Auto-detect time anomaly</span>
+    <span class="kw">IF</span> NEW.device_timestamp IS NOT NULL <span class="kw">AND</span>
+       ABS(EXTRACT(EPOCH FROM (NOW() - NEW.device_timestamp))) > 600 <span class="kw">THEN</span>
+        NEW.time_anomaly := TRUE;
+    <span class="kw">END IF</span>;
+
+    <span class="kw">RETURN</span> NEW;
+<span class="kw">END</span>;
+$$ <span class="kw">LANGUAGE</span> plpgsql;
+
+<span class="kw">CREATE TRIGGER</span> trg_validate_pos_binding
+    <span class="kw">BEFORE INSERT ON</span> transaksi_pos
+    <span class="kw">FOR EACH ROW EXECUTE FUNCTION</span> <span class="fn">validate_pos_binding</span>();
+
+<span class="comment">-- =============================================</span>
+<span class="comment">-- TABEL: security_log (BARU)</span>
+<span class="comment">-- =============================================</span>
+<span class="kw">CREATE TABLE</span> <span class="type">security_log</span> (
+    id            <span class="type">SERIAL PRIMARY KEY</span>,
+    event_type    <span class="type">VARCHAR</span>(50) <span class="kw">NOT NULL</span>,
+    petugas_id    <span class="type">INT</span> <span class="kw">REFERENCES</span> petugas(id),
+    pos_id        <span class="type">INT</span> <span class="kw">REFERENCES</span> pos_pantau(id),
+    detail        <span class="type">JSONB</span>,
+    ip_address    <span class="type">INET</span>,
+    created_at    <span class="type">TIMESTAMP</span> <span class="kw">DEFAULT NOW</span>()
+);
+
+<span class="comment">-- Index untuk performa query</span>
+<span class="kw">CREATE INDEX</span> idx_transaksi_kontrak <span class="kw">ON</span> transaksi_pos(kontrak_id);
+<span class="kw">CREATE INDEX</span> idx_transaksi_pos <span class="kw">ON</span> transaksi_pos(pos_id);
+<span class="kw">CREATE INDEX</span> idx_transaksi_tanggal <span class="kw">ON</span> transaksi_pos(server_timestamp);
+<span class="kw">CREATE INDEX</span> idx_transaksi_wa_status <span class="kw">ON</span> transaksi_pos(wa_status, server_timestamp);
+<span class="kw">CREATE INDEX</span> idx_kontrak_no <span class="kw">ON</span> kontrak(no_kontrak);
+<span class="kw">CREATE INDEX</span> idx_security_log_type <span class="kw">ON</span> security_log(event_type, created_at);
+<span class="kw">CREATE INDEX</span> idx_security_log_petugas <span class="kw">ON</span> security_log(petugas_id, created_at);
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- RELASI -->
+  <h3>Relasi Antar Tabel</h3>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <tr><th>Relasi</th><th>Tipe</th><th>Keterangan</th></tr>
+        <tr><td>petani → kontrak</td><td>One-to-Many</td><td>Satu petani bisa punya banyak kontrak (per periode giling)</td></tr>
+        <tr><td>kontrak → transaksi_pos</td><td>One-to-Many</td><td>Satu kontrak bisa punya banyak truk/pengiriman</td></tr>
+        <tr><td>pos_pantau → transaksi_pos</td><td>One-to-Many</td><td>Satu pos mencatat banyak transaksi</td></tr>
+        <tr><td>petugas → transaksi_pos</td><td>One-to-Many</td><td>Satu petugas mencatat banyak transaksi</td></tr>
+        <tr><td>petugas → pos_pantau</td><td>Many-to-One</td><td>Petugas ditugaskan ke satu pos (enforced by trigger)</td></tr>
+        <tr><td>petugas → security_log</td><td>One-to-Many</td><td><span class="update-badge">BARU</span> Setiap petugas bisa punya banyak security event</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- QUERY DASHBOARD -->
+  <h3>Query — Dashboard Petugas Pos <span class="update-badge">BARU</span></h3>
+  <div class="card card-blue">
+    <h4>Query: Data Truk Hari Ini di Pos Petugas</h4>
+    <div class="code-block">
+<span class="comment">-- Query untuk dashboard petugas: data truk hari ini di posnya</span>
+<span class="kw">SELECT</span>
+    t.id,
+    t.no_plat,
+    t.server_timestamp <span class="kw">AS</span> waktu_masuk,
+    k.no_kontrak,
+    p.nama <span class="kw">AS</span> nama_petani,
+    pt.nama <span class="kw">AS</span> diinput_oleh,
+    t.wa_status,
+    t.gps_accuracy,
+    t.time_anomaly
+<span class="kw">FROM</span> transaksi_pos t
+<span class="kw">LEFT JOIN</span> kontrak k <span class="kw">ON</span> t.kontrak_id = k.id
+<span class="kw">LEFT JOIN</span> petani p <span class="kw">ON</span> k.petani_id = p.id
+<span class="kw">JOIN</span> petugas pt <span class="kw">ON</span> t.petugas_id = pt.id
+<span class="kw">WHERE</span> t.pos_id = :user_pos_id   <span class="comment">-- hanya pos petugas yg login</span>
+  <span class="kw">AND</span> DATE(t.server_timestamp) = :tanggal_filter
+<span class="kw">ORDER BY</span> t.server_timestamp <span class="kw">DESC</span>;
+
+<span class="comment">-- Ringkasan harian</span>
+<span class="kw">SELECT</span>
+    COUNT(*) <span class="kw">AS</span> total_truk_hari_ini,
+    COUNT(<span class="kw">DISTINCT</span> t.no_plat) <span class="kw">AS</span> truk_unik,
+    COUNT(<span class="kw">CASE WHEN</span> t.wa_status = <span class="str">'sent'</span> <span class="kw">THEN</span> 1 <span class="kw">END</span>) <span class="kw">AS</span> wa_terkirim,
+    COUNT(<span class="kw">CASE WHEN</span> t.wa_status = <span class="str">'failed'</span> <span class="kw">THEN</span> 1 <span class="kw">END</span>) <span class="kw">AS</span> wa_gagal
+<span class="kw">FROM</span> transaksi_pos t
+<span class="kw">WHERE</span> t.pos_id = :user_pos_id
+  <span class="kw">AND</span> DATE(t.server_timestamp) = CURRENT_DATE;
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  TAB 5 — UI/UX WIREFRAME                       -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="uiux" class="tab-content">
+  <h2>UI/UX Wireframe</h2>
+  <p class="section-desc">Panduan visual desain antarmuka aplikasi Android + Dashboard Web Pos. Gaya minimalis putih dengan aksen hijau tebu. Font besar dan kontras tinggi untuk kemudahan baca di lapangan.</p>
+
+  <!-- DESIGN SYSTEM -->
+  <h3>Design System</h3>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <tr><th>Elemen</th><th>Spesifikasi</th><th>Alasan</th></tr>
+        <tr><td>Warna Utama</td><td><span style="display:inline-block;width:16px;height:16px;background:#1B7A3D;border-radius:3px;vertical-align:middle;"></span> #1B7A3D (Hijau Tebu)</td><td>Identitas pertanian & PG Rendeng</td></tr>
+        <tr><td>Warna Aksen</td><td><span style="display:inline-block;width:16px;height:16px;background:#1565C0;border-radius:3px;vertical-align:middle;"></span> #1565C0 (Biru Industri)</td><td>Elemen sekunder, link, info</td></tr>
+        <tr><td>Background</td><td>#FFFFFF (Putih) & #FAFAFA (Abu sangat terang)</td><td>Minimalis, kontras tinggi di bawah sinar matahari</td></tr>
+        <tr><td>Font</td><td>Roboto / Inter — Bold 16-18sp untuk label, Regular 14sp body</td><td>Keterbacaan tinggi, optimized untuk layar Android</td></tr>
+        <tr><td>Tombol</td><td>Min height 48dp, border-radius 12px, font 16sp Bold</td><td>Mudah ditekan dengan jari, sesuai Android guidelines</td></tr>
+        <tr><td>Field Input</td><td>Min height 48dp, padding 12dp, outline style</td><td>Area sentuh besar untuk penggunaan lapangan</td></tr>
+        <tr><td>Ikon</td><td>Material Design Icons, 24dp</td><td>Konsisten, recognizable</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- WIREFRAME SCREENS -->
+  <h3>Wireframe Halaman — Aplikasi Android</h3>
+
+  <div class="wireframe-grid">
+
+    <!-- ===== SCREEN: LOGIN ===== -->
+    <div>
+      <h4 style="text-align:center;">Halaman Login</h4>
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-statusbar">
+            <span>09:41</span>
+            <span>📶 🔋</span>
+          </div>
+          <div style="padding: 40px 24px 20px; text-align: center;">
+            <div style="width:64px;height:64px;background:var(--green-light);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">🏭</div>
+            <div style="font-size:1.1rem;font-weight:700;color:var(--green-dark);">PG Rendeng</div>
+            <div style="font-size:0.75rem;color:var(--gray-500);margin-bottom:32px;">Sistem Pos Pantau Tebu</div>
+
+            <div class="input-mock">
+              <span class="icon">👤</span>
+              Username / NIP
+            </div>
+            <div class="input-mock">
+              <span class="icon">🔒</span>
+              Password
+            </div>
+
+            <div style="display:flex;align-items:center;gap:8px;margin:16px 0;font-size:0.75rem;color:var(--gray-500);">
+              <div style="width:16px;height:16px;border:1.5px solid var(--gray-300);border-radius:3px;"></div>
+              Ingat saya
+            </div>
+
+            <div class="btn-mock btn-green" style="margin-top:20px;">MASUK</div>
+
+            <div style="margin-top:24px;font-size:0.72rem;color:var(--gray-500);">
+              Lupa password? Hubungi Admin IT
+            </div>
+          </div>
+          <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:0.65rem;color:var(--gray-500);">
+            v1.1.0 — PG Rendeng Kudus
+          </div>
+        </div>
+      </div>
+      <div class="card" style="max-width:320px;margin:12px auto;">
+        <h4 style="margin-top:0;">Catatan UI</h4>
+        <p style="font-size:0.78rem;">Logo PG Rendeng di atas, form minimal. Tombol "Masuk" besar dan kontras. Tidak ada sign-up karena akun dibuat oleh Admin. Setelah login, pos_id petugas otomatis ter-set dari database — tidak bisa dipilih manual.</p>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN: INPUT DATA POS ===== -->
+    <div>
+      <h4 style="text-align:center;">Halaman Input Data Pos</h4>
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-statusbar">
+            <span>10:23</span>
+            <span>📶 🔋</span>
+          </div>
+          <div class="phone-header">
+            <h5>Catat Truk Masuk</h5>
+            <small>📍 Pos Jepara &nbsp;•&nbsp; GPS Valid ✓ &nbsp;•&nbsp; 🔒 Pos Terikat</small>
+          </div>
+          <div class="phone-body">
+            <div style="display:flex;gap:6px;margin-bottom:12px;">
+              <span class="tag tag-green">📍 Lokasi OK</span>
+              <span class="tag tag-blue">🔒 Pos Terikat</span>
+            </div>
+
+            <div style="font-size:0.72rem;color:var(--gray-500);margin-bottom:4px;font-weight:600;">NOMOR KONTRAK</div>
+            <div class="input-mock filled">
+              <span class="icon">📋</span>
+              KTR-2026-00412
+            </div>
+
+            <div style="background:var(--green-light);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:0.78rem;">
+              <div style="color:var(--gray-500);font-size:0.68rem;">PETANI</div>
+              <strong style="color:var(--green-dark);">Bp. Slamet Riyadi</strong>
+              <div style="color:var(--gray-500);font-size:0.7rem;">Jepara • 0812-xxxx-xxxx</div>
+            </div>
+
+            <div style="font-size:0.72rem;color:var(--gray-500);margin-bottom:4px;font-weight:600;">NOMOR PLAT TRUK</div>
+            <div class="input-mock filled">
+              <span class="icon">🚛</span>
+              K 8234 AB
+              <span class="tag tag-blue" style="margin-left:auto;">OCR ✓</span>
+            </div>
+
+            <div style="font-size:0.72rem;color:var(--gray-500);margin-bottom:4px;font-weight:600;">FOTO TRUK & MUATAN</div>
+            <div class="camera-mock">
+              <div class="cam-icon">📸</div>
+              Ketuk untuk foto truk
+            </div>
+
+            <div style="display:flex;gap:8px;">
+              <div style="flex:1;height:48px;background:var(--gray-200);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--gray-500);">
+                📷 foto_truk.jpg
+              </div>
+              <div style="flex:1;height:48px;background:var(--gray-200);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--gray-500);">
+                + Foto Muatan
+              </div>
+            </div>
+
+            <div class="btn-mock btn-green" style="margin-top:16px;">
+              ✓ SUBMIT DATA
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="max-width:320px;margin:12px auto;">
+        <h4 style="margin-top:0;">Catatan UI <span class="update-badge">DIPERBARUI</span></h4>
+        <p style="font-size:0.78rem;">Header hijau menampilkan nama pos & status GPS + badge "Pos Terikat" menunjukkan petugas hanya bisa input di pos ini. Field kontrak dengan auto-complete. Card hijau muda untuk data petani yang auto-fill. <strong>Pos_id otomatis dari akun login, tidak ada pilihan ganti pos.</strong></p>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN: RIWAYAT ===== -->
+    <div>
+      <h4 style="text-align:center;">Halaman Riwayat</h4>
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-statusbar">
+            <span>14:07</span>
+            <span>📶 🔋</span>
+          </div>
+          <div class="phone-header">
+            <h5>Riwayat Pencatatan</h5>
+            <small>Pos Jepara — Hari Ini</small>
+          </div>
+          <div class="phone-body">
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+              <div style="flex:1;background:var(--green-light);border-radius:8px;padding:8px;text-align:center;">
+                <div style="font-size:1.2rem;font-weight:700;color:var(--green-primary);">12</div>
+                <div style="font-size:0.65rem;color:var(--gray-500);">Hari Ini</div>
+              </div>
+              <div style="flex:1;background:var(--blue-light);border-radius:8px;padding:8px;text-align:center;">
+                <div style="font-size:1.2rem;font-weight:700;color:var(--blue-accent);">87</div>
+                <div style="font-size:0.65rem;color:var(--gray-500);">Minggu Ini</div>
+              </div>
+              <div style="flex:1;background:#FFF3E0;border-radius:8px;padding:8px;text-align:center;">
+                <div style="font-size:1.2rem;font-weight:700;color:var(--orange-accent);">2</div>
+                <div style="font-size:0.65rem;color:var(--gray-500);">WA Gagal</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:6px;margin-bottom:12px;">
+              <div class="input-mock" style="flex:1;margin:0;font-size:0.72rem;">🔍 Cari plat/kontrak...</div>
+              <div style="width:36px;height:36px;background:var(--green-primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.9rem;">⚙</div>
+            </div>
+
+            <div class="history-item">
+              <div class="hi-left">
+                <strong>K 8234 AB</strong>
+                <small>KTR-2026-00412 • Bp. Slamet</small>
+              </div>
+              <div class="hi-right">
+                14:02<br>
+                <span class="tag tag-green">WA Sent ✓</span>
+              </div>
+            </div>
+            <div class="history-item">
+              <div class="hi-left">
+                <strong>K 1567 CD</strong>
+                <small>KTR-2026-00389 • Bp. Hartono</small>
+              </div>
+              <div class="hi-right">
+                13:45<br>
+                <span class="tag tag-green">WA Sent ✓</span>
+              </div>
+            </div>
+            <div class="history-item">
+              <div class="hi-left">
+                <strong>H 9921 EF</strong>
+                <small>KTR-2026-00455 • Ibu Suryati</small>
+              </div>
+              <div class="hi-right">
+                12:30<br>
+                <span class="tag tag-orange">WA Pending</span>
+              </div>
+            </div>
+            <div class="history-item">
+              <div class="hi-left">
+                <strong>K 4410 GH</strong>
+                <small>KTR-2026-00401 • Bp. Darmawan</small>
+              </div>
+              <div class="hi-right">
+                11:15<br>
+                <span class="tag tag-green">WA Sent ✓</span>
+              </div>
+            </div>
+
+            <div style="text-align:center;margin-top:12px;font-size:0.72rem;color:var(--gray-500);">
+              Tampilkan lebih banyak ↓
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="max-width:320px;margin:12px auto;">
+        <h4 style="margin-top:0;">Catatan UI</h4>
+        <p style="font-size:0.78rem;">3 stat cards di atas (hari ini, minggu ini, WA gagal). Search bar untuk filter cepat. List item menampilkan plat, kontrak, petani, waktu, dan status WA. <strong>Data hanya dari pos petugas yang login — tidak bisa akses pos lain.</strong></p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ===== DASHBOARD WEB POS (BARU) ===== -->
+  <h3>Dashboard Web — Data Truk Masuk per Pos <span class="update-badge">BARU</span></h3>
+  <p>Tampilan web yang bisa diakses petugas untuk melihat data truk yang masuk di posnya secara detail, dengan filter tanggal dan ringkasan harian.</p>
+
+  <div class="web-frame">
+    <div class="web-titlebar">
+      <div class="web-dot" style="background:#FF5F57;"></div>
+      <div class="web-dot" style="background:#FFBD2E;"></div>
+      <div class="web-dot" style="background:#28C840;"></div>
+      <span style="margin-left:12px;">pos-pantau.pgrendeng.id/dashboard — Pos Jepara — Ahmad Supriyanto</span>
+    </div>
+    <div class="web-content">
+      <!-- Header dashboard -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <div style="font-size:1.3rem;font-weight:700;color:var(--green-dark);">Dashboard Pos Jepara</div>
+          <div style="font-size:0.8rem;color:var(--gray-500);">Petugas: Ahmad Supriyanto — Rabu, 9 April 2026</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="background:var(--white);border:1.5px solid var(--gray-300);border-radius:8px;padding:6px 12px;font-size:0.78rem;color:var(--gray-700);">
+            📅 09/04/2026
+          </div>
+          <div style="background:var(--green-primary);color:white;border-radius:8px;padding:6px 14px;font-size:0.78rem;font-weight:600;">
+            Filter
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stat-grid">
+        <div class="stat-card" style="border-left:4px solid var(--green-primary);">
+          <div class="stat-num" style="color:var(--green-primary);">18</div>
+          <div class="stat-label">Total Truk Hari Ini</div>
+        </div>
+        <div class="stat-card" style="border-left:4px solid var(--blue-accent);">
+          <div class="stat-num" style="color:var(--blue-accent);">15</div>
+          <div class="stat-label">Truk Unik (Plat Berbeda)</div>
+        </div>
+        <div class="stat-card" style="border-left:4px solid var(--green-primary);">
+          <div class="stat-num" style="color:var(--green-primary);">16</div>
+          <div class="stat-label">WA Terkirim</div>
+        </div>
+        <div class="stat-card" style="border-left:4px solid var(--red-accent);">
+          <div class="stat-num" style="color:var(--red-accent);">1</div>
+          <div class="stat-label">WA Gagal</div>
+        </div>
+      </div>
+
+      <!-- Tabel data truk -->
+      <div style="font-weight:700;font-size:0.9rem;margin-bottom:12px;color:var(--gray-900);">Data Truk Masuk Hari Ini</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div style="flex:1;background:var(--white);border:1.5px solid var(--gray-300);border-radius:8px;padding:8px 12px;font-size:0.75rem;color:var(--gray-500);">
+          🔍 Cari nomor polisi / nomor kontrak...
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="mini-table">
+          <tr>
+            <th>No</th>
+            <th>Nomor Polisi</th>
+            <th>Waktu Masuk</th>
+            <th>No. Kontrak</th>
+            <th>Petani</th>
+            <th>Diinput Oleh</th>
+            <th>Status WA</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td><strong>K 8234 AB</strong></td>
+            <td>14:02</td>
+            <td>KTR-2026-00412</td>
+            <td>Bp. Slamet Riyadi</td>
+            <td>Ahmad Supriyanto</td>
+            <td><span class="tag tag-green">Terkirim</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>K 1567 CD</strong></td>
+            <td>13:45</td>
+            <td>KTR-2026-00389</td>
+            <td>Bp. Hartono</td>
+            <td>Ahmad Supriyanto</td>
+            <td><span class="tag tag-green">Terkirim</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>H 9921 EF</strong></td>
+            <td>12:30</td>
+            <td>KTR-2026-00455</td>
+            <td>Ibu Suryati</td>
+            <td>Budi Santoso</td>
+            <td><span class="tag tag-orange">Pending</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>K 4410 GH</strong></td>
+            <td>11:15</td>
+            <td>KTR-2026-00401</td>
+            <td>Bp. Darmawan</td>
+            <td>Ahmad Supriyanto</td>
+            <td><span class="tag tag-green">Terkirim</span></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>K 7723 IJ</strong></td>
+            <td>10:48</td>
+            <td>KTR-2026-00412</td>
+            <td>Bp. Slamet Riyadi</td>
+            <td>Ahmad Supriyanto</td>
+            <td><span class="tag tag-green">Terkirim</span></td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><strong>H 3345 KL</strong></td>
+            <td>09:22</td>
+            <td>KTR-2026-00478</td>
+            <td>Bp. Wahyudi</td>
+            <td>Budi Santoso</td>
+            <td><span class="tag tag-red">Gagal</span></td>
+          </tr>
+        </table>
+      </div>
+      <div style="text-align:center;margin-top:16px;font-size:0.75rem;color:var(--gray-500);">
+        Menampilkan 6 dari 18 data &nbsp;•&nbsp; Halaman 1 dari 3 &nbsp;•&nbsp; ← 1 2 3 →
+      </div>
+
+      <!-- Notice -->
+      <div style="margin-top:20px;background:#FFF8E1;border:1px solid #FFE082;border-radius:8px;padding:12px 16px;font-size:0.78rem;color:#F57F17;">
+        ⚠️ <strong>Info:</strong> Anda hanya dapat melihat data truk di <strong>Pos Jepara</strong> (pos penugasan Anda). Untuk akses data pos lain, hubungi Admin.
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h4 style="margin-top:0;">Catatan Dashboard Web <span class="update-badge">BARU</span></h4>
+    <p>Dashboard web diakses melalui browser di HP atau laptop petugas. Fitur utama: (1) ringkasan harian di bagian atas (total truk, truk unik, status WA), (2) tabel data truk dengan kolom Nomor Polisi, Waktu Masuk, No. Kontrak, Nama Petani, Siapa yang Input, dan Status WA, (3) filter tanggal untuk melihat data hari sebelumnya, (4) search bar untuk pencarian cepat. <strong>Data di-scope ke pos_id petugas yang login — petugas tidak bisa melihat data pos lain.</strong></p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- NAVIGATION PATTERN -->
+  <h3>Pola Navigasi Aplikasi Android</h3>
+  <div class="card">
+    <p>Aplikasi menggunakan <strong>Bottom Navigation Bar</strong> dengan 4 tab:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Tab</th><th>Ikon</th><th>Fungsi</th></tr>
+        <tr><td>Catat Truk</td><td>📝</td><td>Halaman utama input data truk baru (default saat buka app)</td></tr>
+        <tr><td>Riwayat</td><td>📋</td><td>Daftar pencatatan yang sudah dilakukan hari ini / periode</td></tr>
+        <tr><td>Dashboard</td><td>📊</td><td><span class="update-badge">BARU</span> Buka dashboard web dengan data truk lengkap & ringkasan</td></tr>
+        <tr><td>Profil</td><td>👤</td><td>Info petugas, pos aktif, logout, tentang aplikasi</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:12px;">Navigasi dibuat seminimal mungkin agar petugas lapangan tidak bingung. Fokus utama ada di halaman "Catat Truk" yang langsung muncul setelah login. Tab "Dashboard" membuka WebView ke dashboard pos.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ACCESSIBILITY -->
+  <h3>Pertimbangan Lapangan (Field Usability)</h3>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <tr><th>Kondisi</th><th>Solusi UI</th></tr>
+        <tr><td>Terik matahari</td><td>Background putih, kontras tinggi, font Bold. Hindari warna pastel untuk teks penting.</td></tr>
+        <tr><td>Tangan kotor / sarung tangan</td><td>Tombol dan field input berukuran besar (min 48dp). Tidak ada gesture kompleks.</td></tr>
+        <tr><td>Koneksi internet tidak stabil</td><td>Data disimpan lokal dulu (SQLite), lalu sync ke server saat koneksi tersedia. Indikator "Offline Mode" di header.</td></tr>
+        <tr><td>Petugas tidak tech-savvy</td><td>Alur linear satu halaman, tanpa sub-menu berlapis. Instruksi singkat di setiap field.</td></tr>
+        <tr><td>Waktu terbatas per truk</td><td>OCR otomatis, auto-fill kontrak, satu tombol submit. Target: < 60 detik per truk.</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.container -->
+
+<div style="background:var(--gray-900);color:var(--gray-500);text-align:center;padding:24px;font-size:0.75rem;">
+  Dokumen Desain Sistem v1.1 — Sistem Penerimaan Tebu Digital PG Rendeng Kudus<br>
+  Dibuat: April 2026 — System Analyst & UI/UX Design Document<br>
+  <span style="color:var(--orange-accent);">Update v1.1: Keamanan data per pos, Dashboard truk petugas, WhatsApp ringkasan harian</span>
+</div>
+
+<script>
+function showTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({ top: 200, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

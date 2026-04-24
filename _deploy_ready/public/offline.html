@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0f7b3c" />
+<title>Offline — POS Pantau</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .card {
+    max-width: 360px;
+    background: white;
+    padding: 32px 24px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+  .icon {
+    width: 72px; height: 72px;
+    background: #fef3c7;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+  }
+  h1 { font-size: 18px; margin-bottom: 8px; }
+  p { color: #64748b; font-size: 14px; line-height: 1.5; margin-bottom: 24px; }
+  button {
+    width: 100%;
+    padding: 14px;
+    background: #0f7b3c;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:active { background: #0b5f2e; }
+  .tips {
+    margin-top: 20px;
+    padding: 14px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #475569;
+    text-align: left;
+  }
+  .tips strong { color: #0f172a; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">📡</div>
+    <h1>Tidak Ada Koneksi</h1>
+    <p>HP Anda sedang offline. Data SPA membutuhkan koneksi internet supaya bisa dikirim ke kantor.</p>
+    <button onclick="location.reload()">Coba Lagi</button>
+    <div class="tips">
+      <strong>Tips:</strong><br/>
+      1. Cek sinyal HP (geser layar atas)<br/>
+      2. Matikan & nyalakan ulang Data Seluler<br/>
+      3. Hubungi admin pos kalau masalah terus
+    </div>
+  </div>
+</body>
+</html>
