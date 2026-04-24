@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0f7b3c" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+<title>Admin Dashboard — POS Pantau PG Rendeng</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  tailwind.config = { theme: { extend: { colors: {
+    brand: { DEFAULT: '#0f7b3c', dark: '#0b5f2e', soft: '#e8f5ec' },
+    danger: '#dc2626', warn: '#f59e0b', info: '#2563eb'
+  }}}};
+</script>
+<style>
+  body { font-family: Inter, system-ui, sans-serif; background: #f1f5f9; }
+  .card { background:white; border-radius:14px; padding:16px; box-shadow:0 1px 3px rgba(0,0,0,0.05); border:1px solid #f1f5f9; }
+  #mapPos { height: 420px; border-radius: 14px; z-index: 1; }
+  .pos-pin { background:#0f7b3c; width:28px; height:28px; border-radius:50% 50% 50% 0; transform: rotate(-45deg); border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; }
+  .pos-pin span { transform: rotate(45deg); color:white; font-size:10px; font-weight:700; }
+  .pos-pin.online { background:#0f7b3c; }
+  .pos-pin.warn   { background:#f59e0b; }
+  .pos-pin.offline{ background:#94a3b8; }
+  .nav-link { padding:8px 14px; border-radius:10px; font-size:14px; font-weight:500; color:#475569; }
+  .nav-link.active { background: #0f7b3c; color:white; }
+  .nav-link:hover { background:#e2e8f0; }
+  .nav-link.active:hover { background: #0b5f2e; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-brand flex items-center justify-center">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 119.5 9 2.5 2.5 0 0112 11.5z"/></svg>
+      </div>
+      <div>
+        <div class="font-bold text-slate-800">POS Pantau PG Rendeng</div>
+        <div class="text-xs text-slate-500">Admin Dashboard</div>
+      </div>
+    </div>
+    <nav class="flex items-center gap-1">
+      <a href="#overview" class="nav-link active">Overview</a>
+      <a href="#peta" class="nav-link">Peta Pos</a>
+      <a href="#riwayat" class="nav-link">Riwayat</a>
+      <a href="/Petugas_App.html" class="nav-link">Mode Petugas</a>
+      <button onclick="logout()" class="nav-link text-danger">Keluar</button>
+    </nav>
+  </div>
+</header>
+
+<div id="loginModal" class="hidden fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl p-6 w-full max-w-sm">
+    <h2 class="text-lg font-bold text-slate-800 mb-1">Login Admin</h2>
+    <p class="text-xs text-slate-500 mb-4">Masuk untuk mengakses dashboard.</p>
+    <div class="space-y-3">
+      <input id="adminEmail" type="email" placeholder="admin@pgrendeng.id" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm" />
+      <input id="adminPass" type="password" placeholder="Password" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm" />
+      <button onclick="adminLogin()" id="adminLoginBtn" class="w-full py-3 bg-brand text-white rounded-xl font-semibold">Masuk</button>
+    </div>
+  </div>
+</div>
+
+<main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
+
+  <section id="overview" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="card">
+      <div class="text-xs text-slate-500 uppercase tracking-wide">Hari Ini</div>
+      <div class="text-3xl font-bold text-slate-800 mt-1" id="kpiToday">0</div>
+      <div class="text-xs text-slate-500 mt-1">Total SPA masuk</div>
+    </div>
+    <div class="card">
+      <div class="text-xs text-slate-500 uppercase tracking-wide">Verified</div>
+      <div class="text-3xl font-bold text-brand mt-1" id="kpiVer">0</div>
+      <div class="text-xs text-slate-500 mt-1">Lolos verifikasi</div>
+    </div>
+    <div class="card">
+      <div class="text-xs text-slate-500 uppercase tracking-wide">Ditolak</div>
+      <div class="text-3xl font-bold text-danger mt-1" id="kpiRej">0</div>
+      <div class="text-xs text-slate-500 mt-1">Ada anomali</div>
+    </div>
+    <div class="card">
+      <div class="text-xs text-slate-500 uppercase tracking-wide">Pos Aktif</div>
+      <div class="text-3xl font-bold text-info mt-1" id="kpiPos">0 / 6</div>
+      <div class="text-xs text-slate-500 mt-1">Online 5 menit</div>
+    </div>
+  </section>
+
+  <section id="peta" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="card lg:col-span-2">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-bold text-slate-800">Peta Sebaran 6 Pos Pantau</h3>
+        <span class="text-xs text-slate-500">JPR · PTI · RBG · JPH · TDN · GBG</span>
+      </div>
+      <div id="mapPos"></div>
+    </div>
+    <div class="card">
+      <h3 class="font-bold text-slate-800 mb-3">Status Pos</h3>
+      <div id="posList" class="space-y-2 max-h-[420px] overflow-y-auto">
+        <p class="text-sm text-slate-500 text-center py-6">Memuat...</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="card">
+      <h3 class="font-bold text-slate-800 mb-3">SPA 7 Hari Terakhir</h3>
+      <canvas id="chart7d" height="120"></canvas>
+    </div>
+    <div class="card">
+      <h3 class="font-bold text-slate-800 mb-3">Distribusi per Pos (Hari Ini)</h3>
+      <canvas id="chartPos" height="120"></canvas>
+    </div>
+  </section>
+
+  <section id="riwayat" class="card">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-bold text-slate-800">SPA Terbaru</h3>
+      <input id="searchQ" oninput="debouncedLoadLatest()" placeholder="Cari plat/sopir/petani..." class="px-3 py-2 border border-slate-200 rounded-lg text-sm w-64" />
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs text-slate-500 uppercase border-b border-slate-200">
+            <th class="py-2 pr-3">No. SPA</th>
+            <th class="py-2 pr-3">Pos</th>
+            <th class="py-2 pr-3">Plat</th>
+            <th class="py-2 pr-3">Sopir</th>
+            <th class="py-2 pr-3">Petani</th>
+            <th class="py-2 pr-3">Jarak</th>
+            <th class="py-2 pr-3">Status</th>
+            <th class="py-2 pr-3">Waktu</th>
+          </tr>
+        </thead>
+        <tbody id="latestBody"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+const BASE = location.origin;
+let TOKEN = localStorage.getItem('admin_token');
+let posMarkers = {};
+let mapInstance = null;
+let chart7d = null, chartPos = null;
+
+async function api(path, opts = {}) {
+  const headers = { 'Accept': 'application/json', ...(opts.headers || {}) };
+  if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
+  if (opts.body) headers['Content-Type'] = 'application/json';
+  const res = await fetch(BASE + path, {
+    method: opts.method || 'GET', headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (res.status === 401) { showLogin(); throw new Error('Unauthorized'); }
+    throw new Error(body.message || ('HTTP ' + res.status));
+  }
+  return body;
+}
+
+function showLogin() { document.getElementById('loginModal').classList.remove('hidden'); }
+function hideLogin() { document.getElementById('loginModal').classList.add('hidden'); }
+
+async function adminLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPass').value;
+  if (!email || !pass) return;
+  const btn = document.getElementById('adminLoginBtn');
+  btn.disabled = true; btn.textContent = 'Memproses...';
+  try {
+    const res = await api('/api/auth/login', { method: 'POST', body: { email, password: pass } });
+    if (res.data.user.role !== 'admin') throw new Error('Akun ini bukan admin.');
+    TOKEN = res.data.token;
+    localStorage.setItem('admin_token', TOKEN);
+    hideLogin(); boot();
+  } catch (e) { alert(e.message || 'Login gagal'); }
+  finally { btn.disabled = false; btn.textContent = 'Masuk'; }
+}
+
+function logout() { localStorage.removeItem('admin_token'); TOKEN = null; location.reload(); }
+
+function statusLabelOf(p) {
+  if (!p.last_activity_at) return { text: 'Offline', cls: 'bg-slate-200 text-slate-600', pin: 'offline' };
+  const last = new Date(p.last_activity_at);
+  const mins = (Date.now() - last.getTime()) / 60000;
+  if (mins <= 5)  return { text: 'Online',  cls: 'bg-green-100 text-green-700', pin: 'online'  };
+  if (mins <= 30) return { text: 'Idle',    cls: 'bg-yellow-100 text-yellow-700', pin: 'warn'   };
+  return { text: 'Offline', cls: 'bg-slate-200 text-slate-600', pin: 'offline' };
+}
+
+async function loadPosMap() {
+  const res = await api('/api/pos-pantau');
+  const list = res.data || [];
+
+  if (!mapInstance) {
+    mapInstance = L.map('mapPos').setView([-6.83, 110.85], 9);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap', maxZoom: 18,
+    }).addTo(mapInstance);
+  }
+
+  Object.values(posMarkers).forEach(m => m.remove());
+  posMarkers = {};
+  const bounds = [];
+
+  list.forEach(p => {
+    const lat = parseFloat(p.latitude);
+    const lng = parseFloat(p.longitude);
+    if (isNaN(lat) || isNaN(lng)) return;
+
+    const st = statusLabelOf(p);
+    const html = '<div class="pos-pin ' + st.pin + '"><span>' + p.kode + '</span></div>';
+    const icon = L.divIcon({ html, className: '', iconSize: [28, 28], iconAnchor: [14, 28] });
+    const marker = L.marker([lat, lng], { icon }).addTo(mapInstance);
+    marker.bindPopup(
+      '<div style="font-size:13px;min-width:180px">' +
+        '<div style="font-weight:700">' + p.nama + '</div>' +
+        '<div style="color:#64748b;font-size:11px">Kode: ' + p.kode + '</div>' +
+        '<div style="margin-top:6px;font-size:11px">Radius: ' + (p.radius_meters || 300) + ' m</div>' +
+        '<div style="font-size:11px">SPA hari ini: <b>' + (p.spa_today || 0) + '</b></div>' +
+        '<span style="display:inline-block;margin-top:6px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;" class="' + st.cls + '">' + st.text + '</span>' +
+      '</div>'
+    );
+    posMarkers[p.kode] = marker;
+    bounds.push([lat, lng]);
+  });
+
+  if (bounds.length) mapInstance.fitBounds(bounds, { padding: [40, 40], maxZoom: 11 });
+
+  const listEl = document.getElementById('posList');
+  if (!list.length) { listEl.innerHTML = '<p class="text-sm text-slate-500 text-center py-6">Tidak ada pos.</p>'; return; }
+  listEl.innerHTML = list.map(p => {
+    const st = statusLabelOf(p);
+    return '<div class="p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer" onclick="focusPos(\'' + p.kode + '\')">' +
+      '<div class="flex items-center justify-between"><div>' +
+      '<div class="font-semibold text-sm text-slate-800">' + p.kode + ' · ' + p.nama + '</div>' +
+      '<div class="text-xs text-slate-500">SPA hari ini: ' + (p.spa_today || 0) + '</div></div>' +
+      '<span class="' + st.cls + '" style="padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600">' + st.text + '</span>' +
+      '</div></div>';
+  }).join('');
+
+  const online = list.filter(p => statusLabelOf(p).pin === 'online').length;
+  document.getElementById('kpiPos').textContent = online + ' / ' + list.length;
+}
+
+function focusPos(kode) {
+  const m = posMarkers[kode];
+  if (m && mapInstance) { mapInstance.setView(m.getLatLng(), 14, { animate: true }); m.openPopup(); }
+}
+
+async function loadKpi() {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const res = await api('/api/spa?tanggal=' + today + '&per_page=500');
+    const rows = res.data.data || [];
+    document.getElementById('kpiToday').textContent = rows.length;
+    document.getElementById('kpiVer').textContent = rows.filter(r => r.status === 'verified').length;
+    document.getElementById('kpiRej').textContent = rows.filter(r => r.status === 'rejected').length;
+  } catch (e) {}
+}
+
+async function load7d() {
+  try {
+    const res = await api('/api/stats/7d');
+    const data = res.data || [];
+    const labels = data.map(d => d.tanggal.slice(5));
+    const verified = data.map(d => d.verified || 0);
+    const rejected = data.map(d => d.rejected || 0);
+    const ctx = document.getElementById('chart7d');
+    if (chart7d) chart7d.destroy();
+    chart7d = new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets: [
+        { label: 'Verified', data: verified, backgroundColor: '#0f7b3c' },
+        { label: 'Ditolak',  data: rejected, backgroundColor: '#dc2626' },
+      ]},
+      options: { plugins: { legend: { display: true, position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+    });
+  } catch (e) {}
+}
+
+async function loadPosChart() {
+  try {
+    const res = await api('/api/stats/per-pos');
+    const data = res.data || [];
+    const ctx = document.getElementById('chartPos');
+    if (chartPos) chartPos.destroy();
+    chartPos = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: data.map(d => d.kode),
+        datasets: [{ data: data.map(d => d.total), backgroundColor: ['#0f7b3c','#16a34a','#2563eb','#f59e0b','#dc2626','#7c3aed'] }]
+      },
+      options: { plugins: { legend: { position: 'right' } } }
+    });
+  } catch (e) {}
+}
+
+let searchTimer = null;
+function debouncedLoadLatest() { clearTimeout(searchTimer); searchTimer = setTimeout(loadLatest, 300); }
+
+async function loadLatest() {
+  const q = document.getElementById('searchQ').value.trim();
+  const params = new URLSearchParams({ per_page: '25' });
+  if (q) params.set('q', q);
+  const res = await api('/api/spa?' + params.toString());
+  const rows = res.data.data || [];
+  const tbody = document.getElementById('latestBody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="text-center text-sm text-slate-500 py-6">Tidak ada data.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => {
+    const ok = r.status === 'verified';
+    const badge = ok
+      ? '<span class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">Verified</span>'
+      : '<span class="px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-semibold">Ditolak</span>';
+    const time = new Date(r.waktu_pemantauan || r.created_at).toLocaleString('id-ID', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    return '<tr class="border-b border-slate-100 hover:bg-slate-50">' +
+      '<td class="py-2 pr-3 font-mono text-xs">' + r.nomor_spa + '</td>' +
+      '<td class="py-2 pr-3">' + (r.pos ? r.pos.kode : '-') + '</td>' +
+      '<td class="py-2 pr-3 font-semibold">' + r.nomor_polisi + '</td>' +
+      '<td class="py-2 pr-3">' + (r.nama_sopir || '-') + '</td>' +
+      '<td class="py-2 pr-3">' + (r.snapshot_nama_petani || '-') + '</td>' +
+      '<td class="py-2 pr-3">' + (r.distance_to_pos_meters ? Math.round(r.distance_to_pos_meters)+' m' : '-') + '</td>' +
+      '<td class="py-2 pr-3">' + badge + '</td>' +
+      '<td class="py-2 pr-3 text-xs text-slate-500">' + time + '</td>' +
+      '</tr>';
+  }).join('');
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(()=>{}); });
+}
+
+async function boot() {
+  if (!TOKEN) { showLogin(); return; }
+  try {
+    await Promise.all([loadKpi(), loadPosMap(), load7d(), loadPosChart(), loadLatest()]);
+    setInterval(() => { loadKpi(); loadPosMap(); loadLatest(); }, 30000);
+  } catch (e) { if (e.message !== 'Unauthorized') console.error(e); }
+}
+
+boot();
+</script>
+</body>
+</html>

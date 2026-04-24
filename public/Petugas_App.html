@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0f7b3c" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="POS Pantau" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+<title>POS Pantau — Petugas</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: { colors: {
+    brand: { DEFAULT: '#0f7b3c', dark: '#0b5f2e', soft: '#e8f5ec' },
+    danger: { DEFAULT: '#dc2626', soft: '#fee2e2' },
+    warn:   { DEFAULT: '#f59e0b', soft: '#fef3c7' },
+    info:   { DEFAULT: '#2563eb', soft: '#dbeafe' }
+  }}}};
+</script>
+<style>
+  * { -webkit-tap-highlight-color: transparent; }
+  html, body { background: #f1f5f9; }
+  body { font-family: Inter, system-ui, sans-serif; }
+  @media (min-width: 768px) {
+    body { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px 16px; background:linear-gradient(135deg,#e2e8f0,#f1f5f9); }
+    #phoneFrame {
+      width: 390px; max-height: 92vh;
+      border-radius: 42px;
+      box-shadow: 0 25px 60px rgba(15,23,42,0.25), 0 0 0 10px #0f172a, 0 0 0 11px #1e293b;
+      overflow: hidden; background: #f8fafc;
+      display: flex; flex-direction: column; position: relative;
+    }
+    #phoneFrame::before {
+      content:""; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+      width:110px; height:26px; background:#0f172a; border-radius:14px; z-index:50;
+    }
+    .app-body { overflow-y:auto; flex:1; }
+  }
+  @media (max-width: 767px) {
+    #phoneFrame { min-height:100vh; display:flex; flex-direction:column; }
+    .app-body { flex:1; overflow-y:auto; }
+  }
+  .status-bar { height:28px; background:#0f172a; color:white; display:flex; align-items:center; justify-content:space-between; padding:0 24px; font-size:11px; font-weight:600; }
+  @media (max-width: 767px) { .status-bar { display:none; } }
+  .screen { display:none; padding:16px; padding-bottom:96px; }
+  .screen.active { display:block; animation:fadeIn 0.2s ease; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(6px);} to{opacity:1;transform:none;} }
+  .kpi { padding:14px 12px; border-radius:16px; color:white; display:flex; flex-direction:column; gap:4px; }
+  .kpi .num { font-size:24px; font-weight:800; line-height:1; }
+  .kpi .lbl { font-size:10px; opacity:0.9; text-transform:uppercase; letter-spacing:0.05em; }
+  .menu-card { background:white; border-radius:18px; padding:16px; display:flex; align-items:center; gap:14px; box-shadow:0 2px 6px rgba(15,23,42,0.04); transition: transform 0.1s; cursor:pointer; border:1px solid #f1f5f9; }
+  .menu-card:active { transform:scale(0.98); }
+  .menu-card .icon-wrap { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .menu-card.primary { background:linear-gradient(135deg,#0f7b3c,#0b5f2e); color:white; border:none; }
+  .menu-card.primary .icon-wrap { background:rgba(255,255,255,0.2); }
+  .menu-card.primary .desc { color:rgba(255,255,255,0.85); }
+  .bottom-nav { position:absolute; bottom:0; left:0; right:0; background:white; border-top:1px solid #e2e8f0; display:flex; justify-content:space-around; padding:6px 0 10px; z-index:40; }
+  .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 0; font-size:10px; color:#64748b; background:none; border:none; }
+  .nav-btn.active { color:#0f7b3c; font-weight:600; }
+  .nav-btn svg { width:22px; height:22px; }
+  .input-field { width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:12px; font-size:15px; background:white; }
+  .input-field:focus { outline:none; border-color:#0f7b3c; box-shadow:0 0 0 3px rgba(15,123,60,0.1); }
+  .btn-primary { width:100%; padding:14px; background:#0f7b3c; color:white; border:none; border-radius:12px; font-size:15px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .btn-primary:active { background:#0b5f2e; }
+  .btn-primary:disabled { background:#94a3b8; }
+  .btn-secondary { width:100%; padding:12px; background:#f1f5f9; color:#334155; border:none; border-radius:12px; font-size:14px; font-weight:600; }
+  #toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); padding:12px 18px; border-radius:12px; color:white; font-size:14px; font-weight:500; z-index:100; opacity:0; transition:opacity 0.2s; pointer-events:none; max-width:90%; text-align:center; }
+  #toast.show { opacity:1; }
+  #toast.success { background:#0f7b3c; }
+  #toast.error   { background:#dc2626; }
+  #toast.info    { background:#0f172a; }
+  #installBanner { position:fixed; bottom:16px; left:16px; right:16px; background:white; border-radius:14px; padding:14px; box-shadow:0 8px 24px rgba(15,23,42,0.15); display:none; align-items:center; gap:12px; z-index:90; border-left:4px solid #0f7b3c; }
+  #installBanner.show { display:flex; }
+  .list-item { background:white; border-radius:12px; padding:12px; margin-bottom:8px; border:1px solid #f1f5f9; }
+  .badge { padding:2px 8px; border-radius:999px; font-size:10px; font-weight:600; }
+  .badge.verified { background:#dcfce7; color:#166534; }
+  .badge.rejected { background:#fee2e2; color:#991b1b; }
+  .gps-status { padding:16px; border-radius:14px; margin-bottom:16px; }
+  .gps-status.ok   { background:#dcfce7; border:1px solid #86efac; }
+  .gps-status.fail { background:#fee2e2; border:1px solid #fca5a5; }
+  .gps-status.wait { background:#fef3c7; border:1px solid #fcd34d; }
+  .spinner { width:18px; height:18px; border:2.5px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div id="phoneFrame">
+  <div class="status-bar"><span>9:41</span><span>POS Pantau</span><span>100%</span></div>
+  <header id="appHeader" class="hidden bg-gradient-to-r from-brand to-brand-dark text-white px-4 pt-4 pb-5">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div id="avatar" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold">PR</div>
+        <div>
+          <div id="greetingTxt" class="text-xs opacity-80">Selamat pagi</div>
+          <div id="userName" class="font-semibold text-sm leading-tight">—</div>
+          <div id="userPos" class="text-xs opacity-80">—</div>
+        </div>
+      </div>
+      <button onclick="logout()" class="p-2 rounded-lg bg-white/15">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <section id="loginScreen" class="screen active">
+      <div class="flex flex-col items-center pt-8 mb-6">
+        <div class="w-20 h-20 rounded-2xl bg-brand flex items-center justify-center mb-3 shadow-lg">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 119.5 9 2.5 2.5 0 0112 11.5z"/></svg>
+        </div>
+        <h1 class="text-lg font-bold text-slate-800">POS Pantau PG Rendeng</h1>
+        <p class="text-xs text-slate-500">Verifikasi Penerimaan Tebu</p>
+      </div>
+      <div class="space-y-3">
+        <div><label class="text-xs font-medium text-slate-600 mb-1 block">Email</label>
+          <input id="loginEmail" type="email" class="input-field" placeholder="petugas@pgrendeng.id" autocomplete="username" /></div>
+        <div><label class="text-xs font-medium text-slate-600 mb-1 block">Password</label>
+          <input id="loginPass" type="password" class="input-field" placeholder="********" autocomplete="current-password" /></div>
+        <button onclick="login()" id="loginBtn" class="btn-primary mt-2">Masuk</button>
+      </div>
+      <p class="text-center text-xs text-slate-400 mt-6">v1.0 · Same-origin PWA</p>
+    </section>
+
+    <section id="homeScreen" class="screen">
+      <div class="grid grid-cols-3 gap-2 mb-4">
+        <div class="kpi" style="background:linear-gradient(135deg,#0f7b3c,#16a34a)"><span class="num" id="kpiVerified">0</span><span class="lbl">Verifikasi</span></div>
+        <div class="kpi" style="background:linear-gradient(135deg,#dc2626,#ef4444)"><span class="num" id="kpiRejected">0</span><span class="lbl">Ditolak</span></div>
+        <div class="kpi" style="background:linear-gradient(135deg,#2563eb,#3b82f6)"><span class="num" id="kpiTotal">0</span><span class="lbl">Total Hari Ini</span></div>
+      </div>
+      <h2 class="text-sm font-bold text-slate-700 mb-2 mt-4">Menu Utama</h2>
+      <div class="space-y-2.5">
+        <div class="menu-card primary" onclick="showScreen('inputScreen'); resetInputForm()">
+          <div class="icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8zM5.5 18.5a1.5 1.5 0 103 0 1.5 1.5 0 00-3 0zM15.5 18.5a1.5 1.5 0 103 0 1.5 1.5 0 00-3 0z"/></svg></div>
+          <div class="flex-1"><div class="font-semibold">Input Truk Baru</div><div class="desc text-xs">Scan kontrak & verifikasi muatan</div></div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="menu-card" onclick="showScreen('gpsScreen'); checkGps()">
+          <div class="icon-wrap bg-info-soft"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="#2563eb"/></svg></div>
+          <div class="flex-1"><div class="font-semibold text-slate-800">Verifikasi GPS</div><div class="text-xs text-slate-500">Pastikan posisi di pos yang benar</div></div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="menu-card" onclick="showScreen('historyScreen'); loadHistory()">
+          <div class="icon-wrap bg-warn-soft"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <div class="flex-1"><div class="font-semibold text-slate-800">Riwayat Hari Ini</div><div class="text-xs text-slate-500">SPA yang sudah di-input hari ini</div></div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="menu-card" onclick="showScreen('archiveScreen'); loadArchive()">
+          <div class="icon-wrap" style="background:#ede9fe"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg></div>
+          <div class="flex-1"><div class="font-semibold text-slate-800">Arsip Lengkap</div><div class="text-xs text-slate-500">Cari & filter riwayat SPA</div></div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      </div>
+      <div class="mt-4 p-3 rounded-xl bg-slate-100 flex items-start gap-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" class="mt-0.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div class="text-xs text-slate-600"><span id="clockTxt" class="font-semibold">—</span> · <span id="dateTxt">—</span></div>
+      </div>
+    </section>
+
+    <section id="inputScreen" class="screen">
+      <div class="flex items-center gap-2 mb-4">
+        <button onclick="showScreen('homeScreen')" class="p-2 -ml-2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <h2 class="text-lg font-bold text-slate-800">Input Truk Baru</h2>
+      </div>
+      <div class="space-y-3">
+        <div><label class="text-xs font-medium text-slate-600 mb-1 block">Nomor Kontrak</label>
+          <div class="flex gap-2"><input id="inpKontrak" class="input-field flex-1" placeholder="Contoh: KTR-2026-0042" />
+            <button onclick="lookupKontrak()" class="px-4 bg-info text-white rounded-xl text-sm font-semibold">Cek</button></div>
+          <div id="kontrakInfo" class="hidden mt-2 p-3 bg-brand-soft rounded-xl text-xs text-slate-700"></div></div>
+        <div><label class="text-xs font-medium text-slate-600 mb-1 block">Nomor Polisi</label>
+          <input id="inpPlat" class="input-field" placeholder="K 1234 AB" style="text-transform:uppercase" /></div>
+        <div><label class="text-xs font-medium text-slate-600 mb-1 block">Nama Sopir</label>
+          <input id="inpSopir" class="input-field" placeholder="Nama lengkap sopir" /></div>
+        <div><label class="text-xs font-medium text-slate-600 mb-1 block">Foto Muatan (depan)</label>
+          <input id="inpFoto" type="file" accept="image/*" capture="environment" class="input-field" /></div>
+        <div id="gpsMini" class="p-3 rounded-xl bg-slate-100 text-xs text-slate-600 flex items-center gap-2">
+          <span class="spinner" style="border-color:rgba(0,0,0,0.1);border-top-color:#0f7b3c"></span>
+          <span>Mengambil lokasi GPS...</span></div>
+        <button onclick="submitSpa()" id="submitBtn" class="btn-primary">Kirim SPA</button>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div id="resultBody"></div>
+      <button onclick="showScreen('homeScreen'); loadHome()" class="btn-primary mt-4">Kembali ke Beranda</button>
+    </section>
+
+    <section id="historyScreen" class="screen">
+      <div class="flex items-center gap-2 mb-4">
+        <button onclick="showScreen('homeScreen')" class="p-2 -ml-2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <h2 class="text-lg font-bold text-slate-800">Riwayat Hari Ini</h2>
+      </div>
+      <div id="historyList" class="space-y-2"><p class="text-center text-sm text-slate-500 py-8">Memuat...</p></div>
+    </section>
+
+    <section id="gpsScreen" class="screen">
+      <div class="flex items-center gap-2 mb-4">
+        <button onclick="showScreen('homeScreen')" class="p-2 -ml-2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <h2 class="text-lg font-bold text-slate-800">Verifikasi GPS</h2>
+      </div>
+      <div id="gpsStatus" class="gps-status wait">
+        <div class="flex items-center gap-2 font-semibold mb-1"><span class="spinner" style="border-color:rgba(0,0,0,0.2);border-top-color:#f59e0b"></span> Mendeteksi lokasi...</div>
+        <div class="text-xs text-slate-600">Pastikan GPS HP menyala & izin lokasi aktif.</div>
+      </div>
+      <div class="bg-white rounded-xl p-3 space-y-2 text-sm">
+        <div class="flex justify-between"><span class="text-slate-500">Pos Anda</span><span id="gpsPos" class="font-medium text-right">—</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Titik Pos Resmi</span><span id="gpsPosCoords" class="font-mono text-xs text-right">—</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Koordinat HP</span><span id="gpsCurrentCoords" class="font-mono text-xs text-right">—</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Jarak ke Pos</span><span id="gpsDistance" class="font-semibold text-right">—</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Akurasi GPS</span><span id="gpsAccuracy" class="text-right">—</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Mock Location</span><span id="gpsMock" class="text-right">—</span></div>
+      </div>
+      <button onclick="checkGps()" class="btn-secondary mt-4">Refresh Lokasi</button>
+    </section>
+
+    <section id="archiveScreen" class="screen">
+      <div class="flex items-center gap-2 mb-4">
+        <button onclick="showScreen('homeScreen')" class="p-2 -ml-2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <h2 class="text-lg font-bold text-slate-800">Arsip Lengkap</h2>
+      </div>
+      <div class="bg-white rounded-xl p-3 space-y-2 mb-3">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="text-xs text-slate-500">Dari</label><input type="date" id="arcFrom" class="input-field text-sm" /></div>
+          <div><label class="text-xs text-slate-500">Sampai</label><input type="date" id="arcTo" class="input-field text-sm" /></div>
+        </div>
+        <input id="arcSearch" class="input-field text-sm" placeholder="Cari plat / sopir / petani..." />
+        <button onclick="loadArchive()" class="btn-primary" style="padding:10px;font-size:14px">Cari</button>
+      </div>
+      <div id="archiveList" class="space-y-2"></div>
+    </section>
+  </div>
+
+  <nav id="bottomNav" class="bottom-nav hidden">
+    <button class="nav-btn active" data-screen="homeScreen" onclick="navGo('homeScreen')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Beranda</span>
+    </button>
+    <button class="nav-btn" data-screen="inputScreen" onclick="navGo('inputScreen'); resetInputForm()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg><span>Input</span>
+    </button>
+    <button class="nav-btn" data-screen="gpsScreen" onclick="navGo('gpsScreen'); checkGps()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg><span>GPS</span>
+    </button>
+    <button class="nav-btn" data-screen="historyScreen" onclick="navGo('historyScreen'); loadHistory()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Riwayat</span>
+    </button>
+  </nav>
+</div>
+
+<div id="toast"></div>
+<div id="installBanner">
+  <div class="w-10 h-10 rounded-xl bg-brand-soft flex items-center justify-center flex-shrink-0">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0f7b3c" stroke-width="2.2"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+  </div>
+  <div class="flex-1 min-w-0">
+    <div class="font-semibold text-sm text-slate-800">Install Aplikasi</div>
+    <div class="text-xs text-slate-500">Pasang di HP supaya lebih cepat</div>
+  </div>
+  <button onclick="installApp()" class="px-3 py-2 bg-brand text-white rounded-lg text-xs font-semibold">Install</button>
+  <button onclick="document.getElementById('installBanner').classList.remove('show')" class="p-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+</div>
+
+<script>
+const STORE = {
+  baseUrl: location.origin,
+  token: localStorage.getItem('token') || null,
+  user: JSON.parse(localStorage.getItem('user') || 'null'),
+  pos: JSON.parse(localStorage.getItem('pos') || 'null'),
+  lastKontrak: null, lastGps: null, deferredPrompt: null,
+};
+
+async function api(path, opts = {}) {
+  const headers = { 'Accept': 'application/json', ...(opts.headers || {}) };
+  if (STORE.token) headers['Authorization'] = 'Bearer ' + STORE.token;
+  if (!(opts.body instanceof FormData) && opts.body) headers['Content-Type'] = 'application/json';
+  const res = await fetch(STORE.baseUrl + path, {
+    method: opts.method || 'GET', headers,
+    body: opts.body instanceof FormData ? opts.body : (opts.body ? JSON.stringify(opts.body) : undefined),
+  });
+  const ct = res.headers.get('content-type') || '';
+  const body = ct.includes('json') ? await res.json() : await res.text();
+  if (!res.ok) {
+    const err = new Error((body && body.message) || ('Request gagal (' + res.status + ')'));
+    err.status = res.status; err.body = body; throw err;
+  }
+  return body;
+}
+
+function toast(msg, type = 'info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'show ' + type;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.className = '', 2500);
+}
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
+}
+function navGo(id) { showScreen(id); }
+function greetingByHour() {
+  const h = new Date().getHours();
+  if (h < 11) return 'Selamat pagi'; if (h < 15) return 'Selamat siang';
+  if (h < 18) return 'Selamat sore'; return 'Selamat malam';
+}
+function initials(name) { if (!name) return '??'; return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase(); }
+function tickClock() {
+  const now = new Date();
+  const c = document.getElementById('clockTxt'); if (c) c.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  const d = document.getElementById('dateTxt'); if (d) d.textContent = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+async function login() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  if (!email || !pass) return toast('Lengkapi email & password', 'error');
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Memproses...';
+  try {
+    const res = await api('/api/auth/login', { method: 'POST', body: { email, password: pass } });
+    STORE.token = res.data.token; STORE.user = res.data.user;
+    STORE.pos = res.data.user.pos_pantau || null;
+    localStorage.setItem('token', STORE.token);
+    localStorage.setItem('user', JSON.stringify(STORE.user));
+    localStorage.setItem('pos', JSON.stringify(STORE.pos));
+    enterApp();
+  } catch (e) { toast(e.message || 'Login gagal', 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Masuk'; }
+}
+
+function logout() {
+  if (!confirm('Yakin mau keluar?')) return;
+  localStorage.removeItem('token'); localStorage.removeItem('user'); localStorage.removeItem('pos');
+  STORE.token = null; STORE.user = null; STORE.pos = null; location.reload();
+}
+
+function enterApp() {
+  document.getElementById('appHeader').classList.remove('hidden');
+  document.getElementById('bottomNav').classList.remove('hidden');
+  document.getElementById('greetingTxt').textContent = greetingByHour();
+  document.getElementById('userName').textContent = STORE.user.name || '-';
+  document.getElementById('avatar').textContent = initials(STORE.user.name);
+  document.getElementById('userPos').textContent = STORE.pos ? ('Pos ' + STORE.pos.nama) : '—';
+  showScreen('homeScreen'); loadHome();
+}
+
+async function loadHome() {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const res = await api('/api/spa?tanggal=' + today + '&per_page=200');
+    const rows = res.data.data || [];
+    document.getElementById('kpiVerified').textContent = rows.filter(r => r.status === 'verified').length;
+    document.getElementById('kpiRejected').textContent = rows.filter(r => r.status === 'rejected').length;
+    document.getElementById('kpiTotal').textContent = rows.length;
+  } catch (e) {}
+}
+
+function resetInputForm() {
+  document.getElementById('inpKontrak').value = '';
+  document.getElementById('inpPlat').value = '';
+  document.getElementById('inpSopir').value = '';
+  document.getElementById('inpFoto').value = '';
+  document.getElementById('kontrakInfo').classList.add('hidden');
+  STORE.lastKontrak = null;
+  getGps(document.getElementById('gpsMini'));
+}
+
+async function lookupKontrak() {
+  const nomor = document.getElementById('inpKontrak').value.trim();
+  if (!nomor) return toast('Isi nomor kontrak dulu', 'error');
+  try {
+    const res = await api('/api/kontrak/' + encodeURIComponent(nomor));
+    const k = res.data; STORE.lastKontrak = k;
+    const info = document.getElementById('kontrakInfo');
+    info.innerHTML = '<div class="font-semibold text-brand-dark">' + k.nomor_kontrak + '</div>' +
+      '<div class="mt-1">Petani: <span class="font-medium">' + ((k.petani && k.petani.nama) || '-') + '</span></div>' +
+      '<div>Kebun: ' + ((k.kebun && k.kebun.nama) || '-') + '</div><div>Status: ' + k.status + '</div>';
+    info.classList.remove('hidden');
+  } catch (e) {
+    toast(e.message || 'Kontrak tidak ditemukan', 'error');
+    document.getElementById('kontrakInfo').classList.add('hidden');
+  }
+}
+
+async function getGps(statusEl) {
+  if (!navigator.geolocation) { if (statusEl) statusEl.innerHTML = '<span>GPS tidak didukung browser</span>'; return null; }
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const g = { latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy, is_mock: false };
+        STORE.lastGps = g;
+        if (statusEl) statusEl.innerHTML = '<span>📍</span><span>' + g.latitude.toFixed(5) + ', ' + g.longitude.toFixed(5) + ' · ±' + Math.round(g.accuracy) + 'm</span>';
+        resolve(g);
+      },
+      (err) => { if (statusEl) statusEl.innerHTML = '<span>' + err.message + '</span>'; resolve(null); },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+    );
+  });
+}
+
+async function submitSpa() {
+  const kontrak = document.getElementById('inpKontrak').value.trim();
+  const plat = document.getElementById('inpPlat').value.trim().toUpperCase();
+  const sopir = document.getElementById('inpSopir').value.trim();
+  const foto = document.getElementById('inpFoto').files[0];
+  if (!kontrak || !plat || !sopir) return toast('Lengkapi kontrak, plat, dan sopir', 'error');
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Mengirim...';
+  try {
+    const gps = STORE.lastGps || await getGps(null);
+    if (!gps) { toast('GPS gagal — aktifkan izin lokasi', 'error'); return; }
+    const fd = new FormData();
+    fd.append('nomor_kontrak', kontrak);
+    fd.append('nomor_polisi', plat);
+    fd.append('nama_sopir', sopir);
+    fd.append('gps_latitude', gps.latitude);
+    fd.append('gps_longitude', gps.longitude);
+    fd.append('gps_accuracy_meters', gps.accuracy);
+    fd.append('is_mock_location', gps.is_mock ? 1 : 0);
+    if (foto) fd.append('foto_muatan[]', foto);
+    const res = await api('/api/spa', { method: 'POST', body: fd });
+    showResult(res); loadHome();
+  } catch (e) {
+    if (e.status === 422 && e.body && e.body.data && e.body.data.spa) showResult(e.body);
+    else toast(e.message || 'Gagal kirim SPA', 'error');
+  } finally { btn.disabled = false; btn.textContent = 'Kirim SPA'; }
+}
+
+function showResult(res) {
+  const spa = (res.data && res.data.spa) || res.data;
+  const ok = spa.status === 'verified';
+  const body = document.getElementById('resultBody');
+  const iconOk = '<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#0f7b3c" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>';
+  const iconBad = '<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+  body.innerHTML = '<div class="text-center py-6"><div class="w-20 h-20 mx-auto rounded-full ' + (ok?'bg-brand-soft':'bg-danger-soft') + ' flex items-center justify-center mb-3">' +
+    (ok ? iconOk : iconBad) + '</div><h2 class="text-lg font-bold ' + (ok?'text-brand-dark':'text-danger') + '">' + (ok?'SPA Berhasil':'SPA Ditolak') + '</h2>' +
+    '<p class="text-sm text-slate-500 mt-1">' + (res.message || '') + '</p></div>' +
+    '<div class="bg-white rounded-xl p-4 space-y-2 text-sm">' +
+    '<div class="flex justify-between"><span class="text-slate-500">No. SPA</span><span class="font-mono font-semibold">' + spa.nomor_spa + '</span></div>' +
+    '<div class="flex justify-between"><span class="text-slate-500">Plat</span><span class="font-semibold">' + spa.nomor_polisi + '</span></div>' +
+    '<div class="flex justify-between"><span class="text-slate-500">Petani</span><span>' + (spa.snapshot_nama_petani || '-') + '</span></div>' +
+    '<div class="flex justify-between"><span class="text-slate-500">Jarak ke Pos</span><span>' + (spa.distance_to_pos_meters ? Math.round(spa.distance_to_pos_meters) + ' m' : '-') + '</span></div>' +
+    (!ok ? ('<div class="pt-2 border-t border-slate-200 text-xs text-danger">' + (spa.rejection_reason || '') + '</div>') : '') + '</div>';
+  showScreen('resultScreen');
+}
+
+async function loadHistory() {
+  const list = document.getElementById('historyList');
+  list.innerHTML = '<p class="text-center text-sm text-slate-500 py-8">Memuat...</p>';
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const res = await api('/api/spa?tanggal=' + today + '&per_page=100');
+    const rows = res.data.data || [];
+    if (!rows.length) { list.innerHTML = '<p class="text-center text-sm text-slate-500 py-8">Belum ada SPA hari ini.</p>'; return; }
+    list.innerHTML = rows.map(renderSpaItem).join('');
+  } catch (e) { list.innerHTML = '<p class="text-center text-sm text-danger py-8">Gagal memuat: ' + (e.message || '') + '</p>'; }
+}
+
+function renderSpaItem(r) {
+  const ok = r.status === 'verified';
+  const time = new Date(r.waktu_pemantauan || r.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  return '<div class="list-item"><div class="flex items-start justify-between mb-1"><div>' +
+    '<div class="font-mono text-xs text-slate-500">' + r.nomor_spa + '</div>' +
+    '<div class="font-semibold text-slate-800">' + r.nomor_polisi + '</div></div>' +
+    '<span class="badge ' + (ok?'verified':'rejected') + '">' + (ok?'Verified':'Ditolak') + '</span></div>' +
+    '<div class="text-xs text-slate-500">' + (r.snapshot_nama_petani || '-') + ' · ' + time + '</div>' +
+    (!ok && r.rejection_reason ? ('<div class="text-xs text-danger mt-1">' + r.rejection_reason + '</div>') : '') + '</div>';
+}
+
+async function loadArchive() {
+  const list = document.getElementById('archiveList');
+  list.innerHTML = '<p class="text-center text-sm text-slate-500 py-8">Memuat...</p>';
+  const from = document.getElementById('arcFrom').value;
+  const to = document.getElementById('arcTo').value;
+  const q = document.getElementById('arcSearch').value.trim();
+  const params = new URLSearchParams({ per_page: '50' });
+  if (from) params.set('tanggal_from', from);
+  if (to) params.set('tanggal_to', to);
+  if (q) params.set('q', q);
+  try {
+    const res = await api('/api/spa?' + params.toString());
+    const rows = res.data.data || [];
+    if (!rows.length) { list.innerHTML = '<p class="text-center text-sm text-slate-500 py-8">Tidak ada data.</p>'; return; }
+    list.innerHTML = rows.map(renderSpaItem).join('');
+  } catch (e) { list.innerHTML = '<p class="text-center text-sm text-danger py-8">Gagal: ' + (e.message || '') + '</p>'; }
+}
+
+function haversineMeters(lat1, lon1, lat2, lon2) {
+  const R = 6371e3, toRad = d => d * Math.PI / 180;
+  const p1 = toRad(lat1), p2 = toRad(lat2);
+  const dp = toRad(lat2 - lat1), dl = toRad(lon2 - lon1);
+  const a = Math.sin(dp / 2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function setGpsStatus(state, title, desc) {
+  const box = document.getElementById('gpsStatus');
+  box.className = 'gps-status ' + state;
+  const icon = state === 'ok' ? '✓' : state === 'fail' ? '✗' : '…';
+  box.innerHTML = '<div class="flex items-center gap-2 font-semibold mb-1"><span>' + icon + '</span> ' + title + '</div>' +
+    '<div class="text-xs text-slate-600">' + desc + '</div>';
+}
+
+async function checkGps() {
+  if (!STORE.pos) { setGpsStatus('fail', 'Pos tidak diketahui', 'Akun belum di-assign ke pos manapun.'); return; }
+  const posLat = parseFloat(STORE.pos.latitude);
+  const posLng = parseFloat(STORE.pos.longitude);
+  document.getElementById('gpsPos').textContent = STORE.pos.nama + ' (' + STORE.pos.kode + ')';
+  document.getElementById('gpsPosCoords').textContent = posLat.toFixed(5) + ', ' + posLng.toFixed(5);
+  setGpsStatus('wait', 'Mendeteksi lokasi...', 'Tunggu sebentar — mohon izinkan akses lokasi.');
+  const g = await getGps(null);
+  if (!g) { setGpsStatus('fail', 'Gagal ambil lokasi', 'Aktifkan GPS & izin lokasi untuk POS Pantau.'); return; }
+  document.getElementById('gpsCurrentCoords').textContent = g.latitude.toFixed(5) + ', ' + g.longitude.toFixed(5);
+  document.getElementById('gpsAccuracy').textContent = '±' + Math.round(g.accuracy) + ' m';
+  document.getElementById('gpsMock').textContent = g.is_mock ? 'TERDETEKSI ⚠️' : 'Tidak terdeteksi';
+  const dist = haversineMeters(posLat, posLng, g.latitude, g.longitude);
+  document.getElementById('gpsDistance').textContent = dist < 1000 ? Math.round(dist) + ' m' : (dist / 1000).toFixed(2) + ' km';
+  const radius = parseFloat(STORE.pos.radius_meters || 300);
+  if (g.is_mock) setGpsStatus('fail', 'Mock Location Terdeteksi', 'Matikan fake GPS di Opsi Pengembang.');
+  else if (dist <= radius) setGpsStatus('ok', 'GPS Valid', 'Anda berada dalam radius pos (' + radius + ' m).');
+  else setGpsStatus('fail', 'Di Luar Radius', 'Jarak ' + Math.round(dist) + ' m, batas ' + radius + ' m.');
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(reg => console.log('[SW] registered:', reg.scope)).catch(err => console.warn('[SW] register failed:', err));
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); STORE.deferredPrompt = e;
+  document.getElementById('installBanner').classList.add('show');
+});
+
+async function installApp() {
+  if (!STORE.deferredPrompt) return;
+  STORE.deferredPrompt.prompt();
+  const { outcome } = await STORE.deferredPrompt.userChoice;
+  if (outcome === 'accepted') toast('Aplikasi terpasang', 'success');
+  STORE.deferredPrompt = null;
+  document.getElementById('installBanner').classList.remove('show');
+}
+
+window.addEventListener('appinstalled', () => {
+  toast('Terpasang di HP!', 'success');
+  document.getElementById('installBanner').classList.remove('show');
+});
+
+(function boot() {
+  tickClock(); setInterval(tickClock, 30000);
+  if (STORE.token && STORE.user) enterApp();
+  const params = new URLSearchParams(location.search);
+  if (params.get('action') === 'input' && STORE.token) { showScreen('inputScreen'); resetInputForm(); }
+  else if (params.get('action') === 'gps' && STORE.token) { showScreen('gpsScreen'); checkGps(); }
+})();
+</script>
+</body>
+</html>

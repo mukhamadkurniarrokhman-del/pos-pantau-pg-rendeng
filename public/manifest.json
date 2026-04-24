@@ -1,0 +1,50 @@
+{
+  "name": "POS Pantau PG Rendeng — Petugas",
+  "short_name": "POS Pantau",
+  "description": "Aplikasi verifikasi penerimaan tebu di pos pantau PG Rendeng Kudus.",
+  "start_url": "/Petugas_App.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f7b3c",
+  "lang": "id",
+  "dir": "ltr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Input Truk Baru",
+      "short_name": "Input",
+      "description": "Langsung ke form input SPA",
+      "url": "/Petugas_App.html?action=input",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Cek Status GPS",
+      "short_name": "GPS",
+      "description": "Verifikasi lokasi pos",
+      "url": "/Petugas_App.html?action=gps",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
