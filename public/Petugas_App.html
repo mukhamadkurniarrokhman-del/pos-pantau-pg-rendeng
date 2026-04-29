@@ -344,7 +344,24 @@ function enterApp() {
   document.getElementById('avatar').textContent = initials(STORE.user.name);
   document.getElementById('userPos').textContent = STORE.pos ? ('Pos ' + STORE.pos.nama) : '—';
   showScreen('homeScreen'); loadHome();
+  startHeartbeat();
 }
+
+// Heartbeat ke server tiap 30 detik supaya admin bisa lihat petugas mana yg online
+let _hbTimer = null;
+function startHeartbeat() {
+  if (_hbTimer) clearInterval(_hbTimer);
+  const ping = () => {
+    if (!STORE.token) return;
+    api('/api/auth/ping', { method: 'POST', body: { t: Date.now() } }).catch(() => {});
+  };
+  ping();
+  _hbTimer = setInterval(ping, 30000);
+}
+// Stop heartbeat saat tab tertutup/sleep, restart saat aktif
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && STORE.token) startHeartbeat();
+});
 
 async function loadHome() {
   try {
