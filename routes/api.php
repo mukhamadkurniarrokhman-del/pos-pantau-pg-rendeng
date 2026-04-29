@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\KontrakController;
 use App\Http\Controllers\Api\PosController;
 use App\Http\Controllers\Api\SpaController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +31,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Auth profile
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::get('auth/me', [AuthController::class, 'me']);
+    Route::post('auth/ping', [AuthController::class, 'ping']); // Heartbeat dari Petugas App tiap 30 dtk
+
+    // Active users (admin only)
+    Route::get('users/active', [UserController::class, 'active'])->middleware('admin');
 
     // Reference data — pos pantau
     Route::get('pos', [PosController::class, 'index']);
