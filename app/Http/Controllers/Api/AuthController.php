@@ -109,4 +109,18 @@ class AuthController extends Controller
             'data' => $user,
         ]);
     }
+
+    /**
+     * Heartbeat — petugas ping setiap 30 detik untuk update last_ping_at.
+     * Dipakai admin untuk lihat siapa yang sedang aktif di aplikasi.
+     */
+    public function ping(Request $request): JsonResponse
+    {
+        $request->user()->update(['last_ping_at' => now()]);
+
+        return response()->json([
+            'status' => 'ok',
+            'time' => now()->toIso8601String(),
+        ]);
+    }
 }
