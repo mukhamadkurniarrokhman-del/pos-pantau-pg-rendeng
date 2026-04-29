@@ -120,6 +120,16 @@
     </div>
   </section>
 
+  <section id="petugasOnline" class="card">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-bold text-slate-800">Petugas Online Sekarang</h3>
+      <span id="onlineCount" class="text-xs text-slate-500">— / —</span>
+    </div>
+    <div id="onlineList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+      <p class="text-sm text-slate-500 text-center py-4 col-span-full">Memuat...</p>
+    </div>
+  </section>
+
   <section id="riwayat" class="card">
     <div class="flex items-center justify-between mb-3">
       <h3 class="font-bold text-slate-800">SPA Terbaru</h3>
@@ -340,11 +350,54 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(()=>{}); });
 }
 
+async function loadActiveUsers() {
+  try {
+    const res = await api('/api/users/active');
+    const d = res.data || {};
+    const users = d.users || [];
+    document.getElementById('onlineCount').textContent =
+      (d.online_count || 0) + ' aktif · ' + (d.idle_count || 0) + ' idle · ' + (d.total || 0) + ' total';
+
+    const list = document.getElementById('onlineList');
+    if (!users.length) {
+      list.innerHTML = '<p class="text-sm text-slate-500 text-center py-4 col-span-full">Belum ada petugas terdaftar.</p>';
+      return;
+    }
+    list.innerHTML = users.map(function(u) {
+      const colors = {
+        online:  { bg:'#dcfce7', dot:'#16a34a', text:'#166534', label:'aktif sekarang' },
+        idle:    { bg:'#fef3c7', dot:'#d97706', text:'#92400e', label:'idle' },
+        offline: { bg:'#f1f5f9', dot:'#64748b', text:'#475569', label:'offline' },
+        never:   { bg:'#f8fafc', dot:'#cbd5e1', text:'#94a3b8', label:'belum pernah login' },
+      };
+      const c = colors[u.status] || colors.never;
+      let timeText = c.label;
+      if (u.status === 'idle' && u.seconds_since_ping != null) {
+        timeText = 'idle ' + Math.round(u.seconds_since_ping) + ' dtk lalu';
+      } else if (u.status === 'offline' && u.last_ping_at) {
+        const last = new Date(u.last_ping_at);
+        const mins = Math.round((Date.now() - last.getTime()) / 60000);
+        if (mins < 60)         timeText = 'offline ' + mins + ' menit lalu';
+        else if (mins < 1440)  timeText = 'offline ' + Math.round(mins/60) + ' jam lalu';
+        else                   timeText = 'offline ' + Math.round(mins/1440) + ' hari lalu';
+      }
+      const posLabel = u.pos ? (u.pos.kode + ' · ' + u.pos.nama) : 'tanpa pos';
+      return '<div class="flex items-center gap-3 p-3 rounded-xl" style="background:' + c.bg + '">' +
+        '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + c.dot + ';flex-shrink:0"></span>' +
+        '<div class="flex-1 min-w-0">' +
+          '<div style="color:' + c.text + ';font-weight:600;font-size:13px;line-height:1.3">' + u.name + '</div>' +
+          '<div style="color:' + c.text + ';opacity:0.75;font-size:11px;line-height:1.3">' + posLabel + '</div>' +
+          '<div style="color:' + c.text + ';opacity:0.65;font-size:10px;line-height:1.3;margin-top:1px">' + timeText + '</div>' +
+        '</div></div>';
+    }).join('');
+  } catch (e) { /* silent */ }
+}
+
 async function boot() {
   if (!TOKEN) { showLogin(); return; }
   try {
-    await Promise.all([loadKpi(), loadPosMap(), load7d(), loadPosChart(), loadLatest()]);
-    setInterval(() => { loadKpi(); loadPosMap(); loadLatest(); }, 30000);
+    await Promise.all([loadKpi(), loadPosMap(), load7d(), loadPosChart(), loadLatest(), loadActiveUsers()]);
+    setInterval(() => { loadKpi(); loadPosMap(); loadLatest(); loadActiveUsers(); }, 30000);
   } catch (e) { if (e.message !== 'Unauthorized') console.error(e); }
 }
 
