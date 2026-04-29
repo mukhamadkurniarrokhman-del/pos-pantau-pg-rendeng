@@ -23,6 +23,7 @@ class User extends Authenticatable
         'pos_pantau_id',
         'is_active',
         'last_login_at',
+        'last_ping_at',
     ];
 
     protected $hidden = [
@@ -36,6 +37,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'last_login_at' => 'datetime',
+            'last_ping_at' => 'datetime',
         ];
     }
 
